@@ -11,14 +11,14 @@ matplotlib.use('TkAgg')
 ##### SAMPLE USAGE OF THE REPOSITORY FUNCTIONS #####
 
 # Opening an image from sample folder
-real = True
+real = False
 if real:
 	imageName = "./Samples/real/real_10.png"
-	where = "./Code/numberOfPointsForRendering/DALLE2Image"
+	where = "./Code/numberOfPointsForRendering/RealImage"
 	C = circle(479, 515, 201)
 else:
 	imageName = "./Samples/dalle2/dalle2_1.png"
-	where = "./Code/numberOfPointsForRendering/RealImage"
+	where = "./Code/numberOfPointsForRendering/DALLE2Image"
 	C = circle(587, 432, 301)
 
 originalImage = np.asarray(Image.open(imageName), dtype=np.uint8)
@@ -38,12 +38,14 @@ setOfM = [10, 200, 500, 1000, counterOfPoint*(5/100), counterOfPoint*(10/100)]
 test = 10
 
 for M in setOfM:
+	print(M)
 	M = int(np.floor(M))
 
 	setOfCoefficients = np.zeros((test, 3, 9))
 
 
 	for i in range(0,test):
+		print(i)
 		if real:
 			C = circle(587, 432, 301)
 		else :

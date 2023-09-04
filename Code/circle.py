@@ -7,11 +7,6 @@ from point import point
 import time
 
 
-def medianFiltering(image, N=9):
-	outputImage = ndimage.median_filter(image, size=(N, N, 1))
-	return outputImage
-
-
 pixelLength = 1024
 
 
@@ -44,6 +39,11 @@ class circle:
 		# bits outside the sphere's border, we substitute the value of the pixel outside the image with values 0 and 255
 		# alternately, so to minimize the impact in the filtering application
 
+		xMin = max(self.center.x - self.r + 1, 0)
+		xMax = min(self.center.x + self.r, pixelLength)
+		yMin = max(self.center.y - self.r + 1, 0)
+		yMax = min(self.center.y + self.r, pixelLength)
+		
 		medianImage = np.zeros_like(image)
 		outputImage = image.copy()
 
@@ -53,27 +53,20 @@ class circle:
 				medianImage[xCoordinate, yCoordinate, :] = [255 * ((xCoordinate + yCoordinate) % 2)] * 3
 
 		# Adding the pixels inside the circle
-		for xCoordinate in range(self.center.x - self.r + 1, self.center.x + self.r):
-			d = int(np.floor(
-				self.center.x - xCoordinate))  # distance from the point we are dealing with and the center (in x coordinate)
-			c = int(np.floor(np.sqrt(self.r ** 2 - (
-				d) ** 2)))  # distance from the center and the minimum y that is related to the xCoordinate
-			for yCoordinate in range(self.center.y - c, self.center.y + c):
+		for xCoordinate in range(xMin, xMax):
+			d = int(np.floor(self.center.x - xCoordinate))  # distance from the point we are dealing with and the center (in x coordinate)
+			c = int(np.floor(np.sqrt(self.r ** 2 - (d) ** 2)))  # distance from the center and the minimum y that is related to the xCoordinate
+			for yCoordinate in range(max(self.center.y - c, 0), min(self.center.y + c, pixelLength)):
 				medianImage[xCoordinate, yCoordinate, :] = image[xCoordinate, yCoordinate, :]
 
 		# Applying median filtering
-		medianImage[self.center.x - self.r + 1: self.center.x + self.r,
-		self.center.y - self.r + 1: self.center.y + self.r] = ndimage.median_filter(
-			medianImage[self.center.x - self.r + 1: self.center.x + self.r,
-			self.center.y - self.r + 1: self.center.y + self.r], size=(N, N, 1), mode='reflect')
+		medianImage[xMin: xMax, yMin: yMax] = ndimage.median_filter(medianImage[xMin: xMax, yMin: yMax], size=(N, N, 1), mode='reflect')
 
 		# Copying the median filtered pixels in the output image
-		for xCoordinate in range(self.center.x - self.r + 1, self.center.x + self.r):
-			d = int(np.floor(
-				self.center.x - xCoordinate))  # distance from the point we are dealing with and the center (in x coordinate)
-			c = int(np.floor(np.sqrt(self.r ** 2 - (
-				d) ** 2)))  # distance from the center and the minimum y that is related to the xCoordinate
-			for yCoordinate in range(self.center.y - c, self.center.y + c):
+		for xCoordinate in range(xMin, xMax):
+			d = int(np.floor(self.center.x - xCoordinate))  # distance from the point we are dealing with and the center (in x coordinate)
+			c = int(np.floor(np.sqrt(self.r ** 2 - (d) ** 2)))  # distance from the center and the minimum y that is related to the xCoordinate
+			for yCoordinate in range(max(self.center.y - c, 0), min(self.center.y + c, pixelLength)):
 				outputImage[xCoordinate, yCoordinate, :] = medianImage[xCoordinate, yCoordinate, :]
 
 		return outputImage
@@ -334,7 +327,7 @@ class circle:
 		"""Estimate the rendering coefficients of the sphere using N points."""
 
 		# Applicating median filtering to the pixels inside the circle
-		medianFiltered = medianFiltering(image)
+		medianImage = self.medianFiltered(image)
 
 		# Constructiong the list of the points
 		pointsList = self.randomPoint(M)
@@ -349,12 +342,12 @@ class circle:
 					 )
 		A = np.array(A)
 
-		match len(medianFiltered.shape):
+		match len(medianImage.shape):
 			case 3:  # RGB image
 				for i in range(3):  # i cycling through the three RGB layers
 
 					# Constructing the vector b for each layer
-					b = np.array([medianFiltered[p.x, p.y, i] for p in pointsList])
+					b = np.array([medianImage[p.x, p.y, i] for p in pointsList])
 
 					# Solving the system
 					l = np.linalg.lstsq(A, b, rcond=None)[0]
@@ -373,7 +366,7 @@ class circle:
 			case 2:  # Grayscale image
 
 				# Constructing the vector b
-				b = np.array([medianFiltered[p.x, p.y] for p in pointsList])
+				b = np.array([medianImage[p.x, p.y] for p in pointsList])
 
 				# Solving the system
 				l = np.linalg.lstsq(A, b, rcond=None)[0]
