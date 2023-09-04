@@ -39,10 +39,46 @@ class circle:
 	def __contains__(self, P: point):
 		return (P.x - self.center.x) ** 2 + (P.y - self.center.y) ** 2 < self.r ** 2
 
+	def medianFiltered(self, image, N=9):
+		# Median filtering applied in the sphere's area. In order to filter only that method reducing the impact of
+		# bits outside the sphere's border, we substitute the value of the pixel outside the image with values 0 and 255
+		# alternately, so to minimize the impact in the filtering application
+
+		medianImage = np.zeros_like(image)
+		outputImage = image.copy()
+
+		# Starting from an image of zeros and ones
+		for xCoordinate in range(0, pixelLength):
+			for yCoordinate in range(0, pixelLength):
+				medianImage[xCoordinate, yCoordinate, :] = [255 * ((xCoordinate + yCoordinate) % 2)] * 3
+
+		# Adding the pixels inside the circle
+		for xCoordinate in range(self.center.x - self.r + 1, self.center.x + self.r):
+			d = int(np.floor(
+				self.center.x - xCoordinate))  # distance from the point we are dealing with and the center (in x coordinate)
+			c = int(np.floor(np.sqrt(self.r ** 2 - (
+				d) ** 2)))  # distance from the center and the minimum y that is related to the xCoordinate
+			for yCoordinate in range(self.center.y - c, self.center.y + c):
+				medianImage[xCoordinate, yCoordinate, :] = image[xCoordinate, yCoordinate, :]
+
+		# Applying median filtering
+		medianImage[self.center.x - self.r + 1: self.center.x + self.r,
+		self.center.y - self.r + 1: self.center.y + self.r] = ndimage.median_filter(
+			medianImage[self.center.x - self.r + 1: self.center.x + self.r,
+			self.center.y - self.r + 1: self.center.y + self.r], size=(N, N, 1), mode='reflect')
+
+		# Copying the median filtered pixels in the output image
+		for xCoordinate in range(self.center.x - self.r + 1, self.center.x + self.r):
+			d = int(np.floor(
+				self.center.x - xCoordinate))  # distance from the point we are dealing with and the center (in x coordinate)
+			c = int(np.floor(np.sqrt(self.r ** 2 - (
+				d) ** 2)))  # distance from the center and the minimum y that is related to the xCoordinate
+			for yCoordinate in range(self.center.y - c, self.center.y + c):
+				outputImage[xCoordinate, yCoordinate, :] = medianImage[xCoordinate, yCoordinate, :]
+
+		return outputImage
+
 	def normalAtPoint(self, P: point):  # Returns the normal vector in the point P of the sphere
-		# if not P.belongsToCircle(self):
-		#	raise Exception("The point does not belong to the circle.")
-		# else:
 		n = np.zeros(3, dtype=float)
 		n[0] = P.x - self.center.x
 		n[1] = P.y - self.center.y
@@ -85,8 +121,9 @@ class circle:
 	def Y22(n):
 		return 1.5 * np.sqrt(5 / (12 * np.pi)) * ((n[0] ** 2) - (n[1] ** 2))
 
-	def renderedOnImage(self, image):
+	def renderedOnImage(self, originalImage):
 		""" Rendering the sphere on the image."""
+		image = originalImage.copy()
 		for x in range(pixelLength):
 			firstFound = False  # Flag useful to speed up the algorithm
 			for y in range(pixelLength):
@@ -293,8 +330,11 @@ class circle:
 
 		return pointsList
 
-	def extimateCoefficients(self, image, M=9, median=True):
-		"""Extimate the rendering coefficients of the sphere using N points."""
+	def extimateCoefficients(self, image, M=9):
+		"""Estimate the rendering coefficients of the sphere using N points."""
+
+		# Applicating median filtering to the pixels inside the circle
+		medianFiltered = medianFiltering(image)
 
 		# Constructiong the list of the points
 		pointsList = self.randomPoint(M)
@@ -309,12 +349,12 @@ class circle:
 					 )
 		A = np.array(A)
 
-		match len(image.shape):
+		match len(medianFiltered.shape):
 			case 3:  # RGB image
 				for i in range(3):  # i cycling through the three RGB layers
 
 					# Constructing the vector b for each layer
-					b = np.array([image[p.x, p.y, i] for p in pointsList])
+					b = np.array([medianFiltered[p.x, p.y, i] for p in pointsList])
 
 					# Solving the system
 					l = np.linalg.lstsq(A, b, rcond=None)[0]
@@ -333,7 +373,7 @@ class circle:
 			case 2:  # Grayscale image
 
 				# Constructing the vector b
-				b = np.array([image[p.x, p.y] for p in pointsList])
+				b = np.array([medianFiltered[p.x, p.y] for p in pointsList])
 
 				# Solving the system
 				l = np.linalg.lstsq(A, b, rcond=None)[0]
@@ -359,15 +399,15 @@ if __name__ == '__main__':
 	##### LIGTHING ANALYSIS DEMO #####
 
 	# Let's open a RGB image from our sample folder
-	imageName = "./Samples/DALLE2/DALLE2_1.png"
+	imageName = "./Samples/dalle2/dalle2_1.png"
 	originalImage = np.asarray(Image.open(imageName), dtype=np.uint8)
 	print(f'Image "{imageName}" opened.')
 
 	# We have already estimated for you the sphere's center and radious
-	C = circle(587, 432, 301)
+	C = circle(554, 270, 241)
 
 	# Let's estimate the l_{i,j} coefficients using M = 150 points
-	C.extimateCoefficients(originalImage, M=150)
+	C.extimateCoefficients(originalImage, M=1000)
 	print("The coefficients have been estimated.")
 
 	# We can now render the sphere on the image. We measure the computation time
@@ -376,19 +416,25 @@ if __name__ == '__main__':
 	end = time.time()
 	print(f"Image rendered in {end - start} s.")
 
-	# Finally we see the results of our computation. In the two subplots of the figure we represent:
-	# 	- the original image with the starting circle guess highlighted in smart green
+	# Finally we see the results of our computation. In the three subplots of the figure we represent:
+	# 	- the original image
+	# 	- the result of applying the median filtering procedure on the image (coefficient estimation intermediate step)
 	# 	- the image with rendered sphere constructed from the estimated coefficients
 
-	matplotlib.rcParams['figure.figsize'] = [14, 7]
+	matplotlib.rcParams['figure.figsize'] = [20, 7]
 
 	# Subplot 1
-	plt.subplot(121)
-	plt.title("Original image with spheres circle")
-	plt.imshow(C.onImage(originalImage))
+	plt.subplot(131)
+	plt.title("Original image")
+	plt.imshow(originalImage)
 
 	# Subplot 2
-	plt.subplot(122)
+	plt.subplot(132)
+	plt.title('Median filtered sphere')
+	plt.imshow(C.medianFiltered(originalImage))
+
+	# Subplot 3
+	plt.subplot(133)
 	plt.title('Rendered sphere')
 	plt.imshow(rendered)
 
