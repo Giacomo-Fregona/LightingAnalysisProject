@@ -99,7 +99,7 @@ class circle:
 						case 3:  # RGB image
 							for i in range(3):  # i cycling through the three RGB layers
 								# n is the normal vector on the point P
-								image[x, y, i] = self.l00[i] * np.pi * self.Y00(n) + \
+								image[x, y, i] = np.clip(self.l00[i] * np.pi * self.Y00(n) + \
 												 self.l1m1[i] * (2 * np.pi / 3) * self.Y1m1(n) + \
 												 self.l10[i] * (2 * np.pi / 3) * self.Y10(n) + \
 												 self.l11[i] * (2 * np.pi / 3) * self.Y11(n) + \
@@ -107,9 +107,9 @@ class circle:
 												 self.l2m1[i] * (np.pi / 4) * self.Y2m1(n) + \
 												 self.l20[i] * (np.pi / 4) * self.Y20(n) + \
 												 self.l21[i] * (np.pi / 4) * self.Y21(n) + \
-												 self.l22[i] * (np.pi / 4) * self.Y22(n)
+												 self.l22[i] * (np.pi / 4) * self.Y22(n), a_max=255, a_min=0)
 						case 2:  # Grayscale image
-							image[x, y] = self.l00[0] * np.pi * self.Y00(n) + \
+							image[x, y] = np.clip(self.l00[0] * np.pi * self.Y00(n) + \
 										  self.l1m1[0] * (2 * np.pi / 3) * self.Y1m1(n) + \
 										  self.l10[0] * (2 * np.pi / 3) * self.Y10(n) + \
 										  self.l11[0] * (2 * np.pi / 3) * self.Y11(n) + \
@@ -117,7 +117,7 @@ class circle:
 										  self.l2m1[0] * (np.pi / 4) * self.Y2m1(n) + \
 										  self.l20[0] * (np.pi / 4) * self.Y20(n) + \
 										  self.l21[0] * (np.pi / 4) * self.Y21(n) + \
-										  self.l22[0] * (np.pi / 4) * self.Y22(n)
+										  self.l22[0] * (np.pi / 4) * self.Y22(n), a_max=255, a_min=0)
 						case other:
 							raise Exception(
 								"The image where to render the sphere has not the correct format of an RGB or grayscale image.")
@@ -164,10 +164,6 @@ class circle:
 				# try:
 				n = self.normalAtPoint(
 					point(xCoordinate, yCoordinate))  # xCoordinate1 = xCoordinate, yCoordinate1 = yCoordinate
-				n1 = np.array([n[0], -n[1], n[2]])  # xCoordinate1 = xCoordinate, yCoordinate1 = yCoordinate + 2*addy
-				n2 = np.array([-n[0], n[1], n[2]])  # xCoordinate1 = xCoordinate + 2addx, yCoordinate = yCoordinate
-				n3 = np.array(
-					[-n[0], -n[1], n[2]])  # xCoordinate1 = xCoordinate + 2addx, yCoordinate = yCoordinate + 2*addy
 
 				# Computing normal-dependent parameters
 				Y = np.zeros((9), dtype=float)
@@ -199,11 +195,11 @@ class circle:
 									self.l2m1[i] * Y[5]
 							val13 = -val02
 
-							if flag0: image[xCoordinate, yCoordinate, i] = val0123 + val01 + val03 + val02
-							if flag1: image[xCoordinate, yCoordinate + 2 * addy, i] = val0123 + val01 + val12 + val13
-							if flag2: image[xCoordinate + 2 * addx, yCoordinate, i] = val0123 + val23 + val12 + val02
+							if flag0: image[xCoordinate, yCoordinate, i] = np.clip(val0123 + val01 + val03 + val02, a_max=255, a_min=0)
+							if flag1: image[xCoordinate, yCoordinate + 2 * addy, i] = np.clip(val0123 + val01 + val12 + val13, a_max=255, a_min=0)
+							if flag2: image[xCoordinate + 2 * addx, yCoordinate, i] = np.clip(val0123 + val23 + val12 + val02, a_max=255, a_min=0)
 							if flag3: image[
-								xCoordinate + 2 * addx, yCoordinate + 2 * addy, i] = val0123 + val23 + val03 + val13
+								xCoordinate + 2 * addx, yCoordinate + 2 * addy, i] = np.clip(val0123 + val23 + val03 + val13, a_max=255, a_min=0)
 
 					case 2:  # Grayscale image
 						val0123 = self.l00[0] * Y[0] + \
@@ -219,11 +215,11 @@ class circle:
 								self.l2m1[0] * Y[5]
 						val13 = -val02
 
-						if flag0: image[xCoordinate, yCoordinate] = val0123 + val01 + val03 + val02
-						if flag1: image[xCoordinate, yCoordinate + 2 * addy] = val0123 + val01 + val12 + val13
-						if flag2: image[xCoordinate + 2 * addx, yCoordinate] = val0123 + val23 + val12 + val02
+						if flag0: image[xCoordinate, yCoordinate] = np.clip(val0123 + val01 + val03 + val02, a_max=255, a_min=0)
+						if flag1: image[xCoordinate, yCoordinate + 2 * addy] = np.clip(val0123 + val01 + val12 + val13, a_max=255, a_min=0)
+						if flag2: image[xCoordinate + 2 * addx, yCoordinate] = np.clip(val0123 + val23 + val12 + val02, a_max=255, a_min=0)
 						if flag3: image[
-							xCoordinate + 2 * addx, yCoordinate + 2 * addy] = val0123 + val23 + val03 + val13
+							xCoordinate + 2 * addx, yCoordinate + 2 * addy] = np.clip(val0123 + val23 + val03 + val13, a_max=255, a_min=0)
 					case other:
 						raise Exception(
 							"The image where to render the sphere has not the correct format of an RGB or grayscale image.")
