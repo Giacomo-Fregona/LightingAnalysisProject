@@ -170,7 +170,7 @@ if __name__ == "__main__":
 	##### EXPECTATION MAXIMIZATION DEMO #####
 
 	# Let's open a RGB image from our sample folder
-	imageName = "./Samples/DALLE2/DALLE2_1.png"
+	imageName = "./Samples/real/real_1.png"
 	originalImage = np.asarray(Image.open(imageName), dtype=np.uint8)
 	print(f'Image "{imageName}" opened.')
 
