@@ -11,8 +11,7 @@ from PIL import Image
 import expectation_lib as ex
 import maximization_lib as ma
 from circle import circle
-from eraser_lib import eraser
-from interaction_lib import interactiveGuess
+from interaction_lib import eraser, interactiveGuess
 
 matplotlib.use('TkAgg')
 
