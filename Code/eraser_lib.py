@@ -136,23 +136,3 @@ class eraser:
 		self.circle.figure.canvas.mpl_disconnect(self.cidrelease)
 		self.circle.figure.canvas.mpl_disconnect(self.cidmotion)
 		return self.image
-
-
-# Test
-if __name__ == '__main__':
-	# Create a test image
-	image = np.zeros((1024, 1024))
-	image[300:500, 200:500] = 255
-	image[40:700, 900:1000] = 255
-
-	# Call eraser methods
-	e = eraser(image, alwaysRefresh=1)
-	e.connect()
-	e.show()
-
-	# Obtain the resulting image
-	img = e.close()
-
-# Show the result
-# plt.imshow(img, cmap='gray', vmin=0, vmax=255)
-# plt.show()
