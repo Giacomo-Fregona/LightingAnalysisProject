@@ -229,5 +229,4 @@ def interactiveGuess(image,
 		C.remove()
 
 	print(f"Result of interactive guess: {C}.\n --- END OF INTERACTIVE GUESS --- ")
-
 	return circle(center[1], center[0], r)  # inverted coordinates
