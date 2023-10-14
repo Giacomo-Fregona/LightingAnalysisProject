@@ -6,6 +6,7 @@ import threading
 from expectation_maximization import EM
 from interaction_lib import interactiveGuess
 from PIL import Image
+from Code.archive import Archive
 
 import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')
@@ -81,7 +82,7 @@ for i in range(numberOfSpheres):
 	C = EM(originalImage, C, rounds=10, visual=0, finalVisual=0, erase=1)
 
 	# Estimating the coefficients
-	C.extimateCoefficients(originalImage, M=1000)
+	C.estimateCoefficients(originalImage, M=1000)
 
 	# Getting the estimated coefficients for each RGB layer
 	coefficients = np.array([[C.l00[i], C.l1m1[i], C.l10[i], C.l11[i], C.l2m2[i], C.l2m1[i], C.l20[i], C.l21[i], C.l22[i]] for i in range(3)])
