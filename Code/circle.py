@@ -6,16 +6,17 @@ from PIL import Image
 from point import point
 import time
 
-
 pixelLength = 1024
 
 
 class circle:
-	def __init__(self, cx: int, cy: int, r: int, sigma=40, epsilon=0.2):  # constructor of the class
+	def __init__(self, cx: int, cy: int, r: int, sigma=40, epsilon=0.2, image=None):  # constructor of the class
 		self.center = point(cx, cy)
 		self.r = r
 		self.sigma = sigma
 		self.epsilon = epsilon
+		self.image = image
+		self.image_id = None
 
 		# Coefficients, one coordinate for each layer, using only the 0-th coordinate for grayscale images
 		self.l00 = np.zeros(shape=(3), dtype=float)
@@ -34,16 +35,24 @@ class circle:
 	def __contains__(self, P: point):
 		return (P.x - self.center.x) ** 2 + (P.y - self.center.y) ** 2 < self.r ** 2
 
-	def medianFiltered(self, image, N=9):
+	def medianFiltered(self, image=None, N=9):
 		# Median filtering applied in the sphere's area. In order to filter only that method reducing the impact of
 		# bits outside the sphere's border, we substitute the value of the pixel outside the image with values 0 and 255
 		# alternately, so to minimize the impact in the filtering application
+
+		# In case image has not been defined, we can use the image self.image
+		if image is None:
+			if not (self.image is None):
+				image = self.image.copy()
+			else:
+				raise Exception(
+					'Please provide an image as input of the medianFiltered method or define the self.image variable')
 
 		xMin = max(self.center.x - self.r + 1, 0)
 		xMax = min(self.center.x + self.r, pixelLength)
 		yMin = max(self.center.y - self.r + 1, 0)
 		yMax = min(self.center.y + self.r, pixelLength)
-		
+
 		medianImage = np.zeros_like(image)
 		outputImage = image.copy()
 
@@ -54,18 +63,23 @@ class circle:
 
 		# Adding the pixels inside the circle
 		for xCoordinate in range(xMin, xMax):
-			d = int(np.floor(self.center.x - xCoordinate))  # distance from the point we are dealing with and the center (in x coordinate)
-			c = int(np.floor(np.sqrt(self.r ** 2 - (d) ** 2)))  # distance from the center and the minimum y that is related to the xCoordinate
+			d = int(np.floor(
+				self.center.x - xCoordinate))  # distance from the point we are dealing with and the center (in x coordinate)
+			c = int(np.floor(np.sqrt(self.r ** 2 - (
+				d) ** 2)))  # distance from the center and the minimum y that is related to the xCoordinate
 			for yCoordinate in range(max(self.center.y - c, 0), min(self.center.y + c, pixelLength)):
 				medianImage[xCoordinate, yCoordinate, :] = image[xCoordinate, yCoordinate, :]
 
 		# Applying median filtering
-		medianImage[xMin: xMax, yMin: yMax] = ndimage.median_filter(medianImage[xMin: xMax, yMin: yMax], size=(N, N, 1), mode='reflect')
+		medianImage[xMin: xMax, yMin: yMax] = ndimage.median_filter(medianImage[xMin: xMax, yMin: yMax], size=(N, N, 1),
+																	mode='reflect')
 
 		# Copying the median filtered pixels in the output image
 		for xCoordinate in range(xMin, xMax):
-			d = int(np.floor(self.center.x - xCoordinate))  # distance from the point we are dealing with and the center (in x coordinate)
-			c = int(np.floor(np.sqrt(self.r ** 2 - (d) ** 2)))  # distance from the center and the minimum y that is related to the xCoordinate
+			d = int(np.floor(
+				self.center.x - xCoordinate))  # distance from the point we are dealing with and the center (in x coordinate)
+			c = int(np.floor(np.sqrt(self.r ** 2 - (
+				d) ** 2)))  # distance from the center and the minimum y that is related to the xCoordinate
 			for yCoordinate in range(max(self.center.y - c, 0), min(self.center.y + c, pixelLength)):
 				outputImage[xCoordinate, yCoordinate, :] = medianImage[xCoordinate, yCoordinate, :]
 
@@ -114,8 +128,17 @@ class circle:
 	def Y22(n):
 		return 1.5 * np.sqrt(5 / (12 * np.pi)) * ((n[0] ** 2) - (n[1] ** 2))
 
-	def renderedOnImage(self, originalImage):
+	def renderedOnImage(self, originalImage=None):
 		""" Rendering the sphere on the image."""
+
+		# In case image has not been defined, we can use the image self.image
+		if originalImage is None:
+			if not (self.image is None):
+				originalImage = self.image.copy()
+			else:
+				raise Exception(
+					'Please provide an image as input of the renderedOnImage method or define the self.image variable')
+
 		image = originalImage.copy()
 		for x in range(pixelLength):
 			firstFound = False  # Flag useful to speed up the algorithm
@@ -130,24 +153,24 @@ class circle:
 							for i in range(3):  # i cycling through the three RGB layers
 								# n is the normal vector on the point P
 								image[x, y, i] = np.clip(self.l00[i] * np.pi * self.Y00(n) + \
-												 self.l1m1[i] * (2 * np.pi / 3) * self.Y1m1(n) + \
-												 self.l10[i] * (2 * np.pi / 3) * self.Y10(n) + \
-												 self.l11[i] * (2 * np.pi / 3) * self.Y11(n) + \
-												 self.l2m2[i] * (np.pi / 4) * self.Y2m2(n) + \
-												 self.l2m1[i] * (np.pi / 4) * self.Y2m1(n) + \
-												 self.l20[i] * (np.pi / 4) * self.Y20(n) + \
-												 self.l21[i] * (np.pi / 4) * self.Y21(n) + \
-												 self.l22[i] * (np.pi / 4) * self.Y22(n), a_max=255, a_min=0)
+														 self.l1m1[i] * (2 * np.pi / 3) * self.Y1m1(n) + \
+														 self.l10[i] * (2 * np.pi / 3) * self.Y10(n) + \
+														 self.l11[i] * (2 * np.pi / 3) * self.Y11(n) + \
+														 self.l2m2[i] * (np.pi / 4) * self.Y2m2(n) + \
+														 self.l2m1[i] * (np.pi / 4) * self.Y2m1(n) + \
+														 self.l20[i] * (np.pi / 4) * self.Y20(n) + \
+														 self.l21[i] * (np.pi / 4) * self.Y21(n) + \
+														 self.l22[i] * (np.pi / 4) * self.Y22(n), a_max=255, a_min=0)
 						case 2:  # Grayscale image
 							image[x, y] = np.clip(self.l00[0] * np.pi * self.Y00(n) + \
-										  self.l1m1[0] * (2 * np.pi / 3) * self.Y1m1(n) + \
-										  self.l10[0] * (2 * np.pi / 3) * self.Y10(n) + \
-										  self.l11[0] * (2 * np.pi / 3) * self.Y11(n) + \
-										  self.l2m2[0] * (np.pi / 4) * self.Y2m2(n) + \
-										  self.l2m1[0] * (np.pi / 4) * self.Y2m1(n) + \
-										  self.l20[0] * (np.pi / 4) * self.Y20(n) + \
-										  self.l21[0] * (np.pi / 4) * self.Y21(n) + \
-										  self.l22[0] * (np.pi / 4) * self.Y22(n), a_max=255, a_min=0)
+												  self.l1m1[0] * (2 * np.pi / 3) * self.Y1m1(n) + \
+												  self.l10[0] * (2 * np.pi / 3) * self.Y10(n) + \
+												  self.l11[0] * (2 * np.pi / 3) * self.Y11(n) + \
+												  self.l2m2[0] * (np.pi / 4) * self.Y2m2(n) + \
+												  self.l2m1[0] * (np.pi / 4) * self.Y2m1(n) + \
+												  self.l20[0] * (np.pi / 4) * self.Y20(n) + \
+												  self.l21[0] * (np.pi / 4) * self.Y21(n) + \
+												  self.l22[0] * (np.pi / 4) * self.Y22(n), a_max=255, a_min=0)
 						case other:
 							raise Exception(
 								"The image where to render the sphere has not the correct format of an RGB or grayscale image.")
@@ -156,8 +179,16 @@ class circle:
 						break
 		return image
 
-	def fastRenderedOnImage(self, originalImage):
+	def fastRenderedOnImage(self, originalImage=None):
 		""" Rendering ball on image faster using precomputation and iterative procedure for finding points on image"""
+
+		# In case image has not been defined, we can use the image self.image
+		if originalImage is None:
+			if not (self.image is None):
+				originalImage = self.image.copy()
+			else:
+				raise Exception('Please provide an image as input of the fastRenderedOnImage method or define the self.image variable')
+
 		image = originalImage.copy()
 
 		# Precomputing mu, i.e. the fixed multipliers involved in each pixel's value estimation
@@ -225,11 +256,15 @@ class circle:
 									self.l2m1[i] * Y[5]
 							val13 = -val02
 
-							if flag0: image[xCoordinate, yCoordinate, i] = np.clip(val0123 + val01 + val03 + val02, a_max=255, a_min=0)
-							if flag1: image[xCoordinate, yCoordinate + 2 * addy, i] = np.clip(val0123 + val01 + val12 + val13, a_max=255, a_min=0)
-							if flag2: image[xCoordinate + 2 * addx, yCoordinate, i] = np.clip(val0123 + val23 + val12 + val02, a_max=255, a_min=0)
+							if flag0: image[xCoordinate, yCoordinate, i] = np.clip(val0123 + val01 + val03 + val02,
+																				   a_max=255, a_min=0)
+							if flag1: image[xCoordinate, yCoordinate + 2 * addy, i] = np.clip(
+								val0123 + val01 + val12 + val13, a_max=255, a_min=0)
+							if flag2: image[xCoordinate + 2 * addx, yCoordinate, i] = np.clip(
+								val0123 + val23 + val12 + val02, a_max=255, a_min=0)
 							if flag3: image[
-								xCoordinate + 2 * addx, yCoordinate + 2 * addy, i] = np.clip(val0123 + val23 + val03 + val13, a_max=255, a_min=0)
+								xCoordinate + 2 * addx, yCoordinate + 2 * addy, i] = np.clip(
+								val0123 + val23 + val03 + val13, a_max=255, a_min=0)
 
 					case 2:  # Grayscale image
 						val0123 = self.l00[0] * Y[0] + \
@@ -245,11 +280,15 @@ class circle:
 								self.l2m1[0] * Y[5]
 						val13 = -val02
 
-						if flag0: image[xCoordinate, yCoordinate] = np.clip(val0123 + val01 + val03 + val02, a_max=255, a_min=0)
-						if flag1: image[xCoordinate, yCoordinate + 2 * addy] = np.clip(val0123 + val01 + val12 + val13, a_max=255, a_min=0)
-						if flag2: image[xCoordinate + 2 * addx, yCoordinate] = np.clip(val0123 + val23 + val12 + val02, a_max=255, a_min=0)
+						if flag0: image[xCoordinate, yCoordinate] = np.clip(val0123 + val01 + val03 + val02, a_max=255,
+																			a_min=0)
+						if flag1: image[xCoordinate, yCoordinate + 2 * addy] = np.clip(val0123 + val01 + val12 + val13,
+																					   a_max=255, a_min=0)
+						if flag2: image[xCoordinate + 2 * addx, yCoordinate] = np.clip(val0123 + val23 + val12 + val02,
+																					   a_max=255, a_min=0)
 						if flag3: image[
-							xCoordinate + 2 * addx, yCoordinate + 2 * addy] = np.clip(val0123 + val23 + val03 + val13, a_max=255, a_min=0)
+							xCoordinate + 2 * addx, yCoordinate + 2 * addy] = np.clip(val0123 + val23 + val03 + val13,
+																					  a_max=255, a_min=0)
 					case other:
 						raise Exception(
 							"The image where to render the sphere has not the correct format of an RGB or grayscale image.")
@@ -261,8 +300,16 @@ class circle:
 	def grayscaleRendered(self):
 		return self.fastRenderedOnImage(np.zeros(shape=(pixelLength, pixelLength), dtype=np.uint8))
 
-	def onImage(self, originalImage,
+	def onImage(self, originalImage=None,
 				width=2):  # return an RGB image with the grayscale original image in background and the circle guess in red
+
+		# In case image has not been defined, we can use the image self.image
+		if originalImage is None:
+			if not (self.image is None):
+				originalImage = C.image.copy()
+			else:
+				raise Exception(
+					'Please provide an image as input of the onImage method or define the self.image variable')
 
 		image = originalImage.copy()
 
@@ -323,13 +370,20 @@ class circle:
 
 		return pointsList
 
-	def extimateCoefficients(self, image, M=9):
+	def estimateCoefficients(self, image=None, M=9):
 		"""Estimate the rendering coefficients of the sphere using N points."""
+
+		# In case image has not been defined, we can use the image self.image
+		if image is None:
+			if not (self.image is None):
+				image = self.image.copy()
+			else:
+				raise Exception('Please provide an image as input of the estimateCoefficients method or define the self.image variable')
 
 		# Applicating median filtering to the pixels inside the circle
 		medianImage = self.medianFiltered(image)
 
-		# Constructiong the list of the points
+		# Constructing the list of the points
 		pointsList = self.randomPoint(M)
 
 		# Constructing the matrix A
@@ -388,24 +442,23 @@ class circle:
 
 
 if __name__ == '__main__':
-
 	##### LIGTHING ANALYSIS DEMO #####
 
 	# Let's open a RGB image from our sample folder
-	imageName = "./Samples/dalle2/dalle2_1.png"
+	imageName = "./Samples/prompt/prompt_1.png"
 	originalImage = np.asarray(Image.open(imageName), dtype=np.uint8)
 	print(f'Image "{imageName}" opened.')
 
-	# We have already estimated for you the sphere's center and radious
-	C = circle(554, 270, 241)
+	# We have already estimated for you the sphere's center and radius
+	C = circle(554, 270, 241, image=originalImage)
 
 	# Let's estimate the l_{i,j} coefficients using M = 150 points
-	C.extimateCoefficients(originalImage, M=1000)
+	C.estimateCoefficients(M=1000)
 	print("The coefficients have been estimated.")
 
 	# We can now render the sphere on the image. We measure the computation time
 	start = time.time()
-	rendered = C.fastRenderedOnImage(originalImage)
+	rendered = C.fastRenderedOnImage()
 	end = time.time()
 	print(f"Image rendered in {end - start} s.")
 

@@ -64,7 +64,7 @@ def preprocessing(originalImage, erase):
 	return image
 
 
-def EM(originalImage, C=0, rounds=0, visual=0, finalVisual=1, erase=1):
+def EM(originalImage=None, C:circle =0, rounds=0, visual=0, finalVisual=1, erase=1):
 	"""
 		originalImage := the image where to find the circle
 		C := the  guess of the circle object
@@ -72,6 +72,13 @@ def EM(originalImage, C=0, rounds=0, visual=0, finalVisual=1, erase=1):
 		visual := run the function showing (1) or not showing the prints in each step of the algorithm
 		erase := the optional usage of the eraser to delete by hand points related to outliers
 	"""
+
+	# In case image has not been defined, we can use the image C.image
+	if originalImage is None:
+		if not (C.image is None):
+			originalImage = C.image.copy()
+		else:
+			raise Exception('Please provide an image as input of the EM method or define the circle.image variable')
 
 	# Preprocessing
 	image = preprocessing(originalImage, erase)
@@ -81,7 +88,7 @@ def EM(originalImage, C=0, rounds=0, visual=0, finalVisual=1, erase=1):
 	# Setting the circle guess in case it is not defined
 	if C == 0:  # if we have no initial guess we start from the circle centered in the center of the image and with radious 1/3 of the smallest edge of the image
 		print("Setting auto guess...")
-		C = circle(image.shape[0] / 2, image.shape[1] / 2, min(image.shape) / 3, sigma=80, epsilon=0.3)
+		C = circle(image.shape[0] / 2, image.shape[1] / 2, min(image.shape) / 3, sigma=80, epsilon=0.3, image=originalImage)
 
 	if visual:
 		# Plotting the processed image also displaying the initial guess

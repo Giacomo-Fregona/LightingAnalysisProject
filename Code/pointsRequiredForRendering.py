@@ -51,7 +51,7 @@ for M in setOfM:
 		else :
 			C = circle(479, 515, 201)
 		# Estimating the coefficients
-		C.extimateCoefficients(originalImage, M = M)
+		C.estimateCoefficients(originalImage, M = M)
 		# Getting the estimated coefficients for each RGB layer
 		coefficients = np.array([[C.l00[i], C.l1m1[i], C.l10[i], C.l11[i], C.l2m2[i], C.l2m1[i], C.l20[i], C.l21[i], C.l22[i]] for i in range(3)])
 		setOfCoefficients[i] = coefficients

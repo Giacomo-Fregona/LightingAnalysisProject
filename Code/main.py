@@ -6,12 +6,14 @@ from interaction_lib import interactiveGuess
 from PIL import Image
 
 import matplotlib.pyplot as plt
+
 matplotlib.use('TkAgg')
+from Code.archive import Archive
 
 ##### SAMPLE USAGE OF THE REPOSITORY FUNCTIONS #####
 
 # Opening an image from sample folder
-imageName = "./Samples/dalle2/dalle2_2.png"
+imageName = "./Samples/prompt/prompt_2.png"
 originalImage = np.asarray(Image.open(imageName), dtype=np.uint8)
 print(f'Image "{imageName}" opened.')
 
@@ -19,13 +21,14 @@ print(f'Image "{imageName}" opened.')
 C = interactiveGuess(originalImage)
 
 # Refining the guess with expectation-maximization procedure
-C = EM(originalImage, C, rounds=10, visual=0, finalVisual=0, erase=1)
+C = EM(C=C, rounds=10, visual=0, finalVisual=0, erase=1)
 
 # Estimating the coefficients
-C.extimateCoefficients(originalImage, M=1000)
+C.estimateCoefficients(M=1000)
 
 # Getting the estimated coefficients for each RGB layer
-coefficients = np.array([[C.l00[i], C.l1m1[i], C.l10[i], C.l11[i], C.l2m2[i], C.l2m1[i], C.l20[i], C.l21[i], C.l22[i]] for i in range(3)])
+coefficients = np.array(
+	[[C.l00[i], C.l1m1[i], C.l10[i], C.l11[i], C.l2m2[i], C.l2m1[i], C.l20[i], C.l21[i], C.l22[i]] for i in range(3)])
 print("\nEstimated coefficients:")
 print(coefficients)
 
@@ -50,3 +53,13 @@ plt.title('Rendered sphere')
 plt.imshow(rendered)
 
 plt.show()
+
+""" Adding the result of computation to the archive """
+
+# Adding image_id attribute to the circle
+C.image_id = imageName
+
+# Adding circle to archive
+pa: Archive = Archive.load(Archive.PROMPT)
+pa.append(C)
+pa.save()
