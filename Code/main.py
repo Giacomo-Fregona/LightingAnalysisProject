@@ -6,7 +6,6 @@ import threading
 from expectation_maximization import EM
 from interaction_lib import interactiveGuess
 from PIL import Image
-from Code.archive import Archive
 
 import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')
