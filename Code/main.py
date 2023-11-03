@@ -6,6 +6,7 @@ import threading
 from expectation_maximization import EM
 from interaction_lib import interactiveGuess
 from PIL import Image
+from archive import Archive
 
 import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')
@@ -15,8 +16,8 @@ matplotlib.use('TkAgg')
 # Opening an image from sample folder
 flag = ""
 while True:
-	flag = input("real, prompt or dalle2FromReal? ").lower().strip()
-	if flag == "real" or flag == "prompt" or flag == "dalle2FromReal":
+	flag = input("real, prompt or variation? ").lower().strip()
+	if flag == "real" or flag == "prompt" or flag == "variation":
 		break
 	else:
 		print("Error: Answer must be real or dalle2")
@@ -71,11 +72,10 @@ input_thread.join()
 
 allMyC = [None] * numberOfSpheres
 allMyRendered = [None] * numberOfSpheres
+
 for i in range(numberOfSpheres):
 	# Calling interactive method to define the first guess
 	allMyC[i] = interactiveGuess(originalImage)
-
-for i in range(numberOfSpheres):
 	C = allMyC[i]
 	# Refining the guess with expectation-maximization procedure
 	C = EM(originalImage, C, rounds=10, visual=0, finalVisual=0, erase=1)
@@ -111,26 +111,32 @@ for i in range(numberOfSpheres):
 
 	plt.show()
 
+	if(False): #to use for presentation
+		pixelLength = 1024
+		for i in range(numberOfSpheres):
+			for x in range(min(allMyC[i].center.x - allMyC[i].r, pixelLength), min(allMyC[i].center.x + allMyC[i].r + 1, pixelLength)):
+				for y in range(min(allMyC[i].center.y - allMyC[i].r, pixelLength), min(allMyC[i].center.y + allMyC[i].r + 1, pixelLength)):
+					for layer in range(3):
+						originalImage[x, y, layer] = np.clip(allMyRendered[i][x, y, layer], 0, 255)
 
-for i in range(numberOfSpheres):
-	for x in range(allMyC[i].center.x - allMyC[i].r, allMyC[i].center.x + allMyC[i].r + 1):
-		for y in range(allMyC[i].center.y - allMyC[i].r, allMyC[i].center.y + allMyC[i].r + 1):
-			for layer in range(3):
-				originalImage[x, y, layer] = np.clip(allMyRendered[i][x, y, layer], 0, 255)
 
+		# Display the modified image
+		plt.figure()
+		plt.title('Modified Original Image')
+		plt.imshow(originalImage)
+		plt.show()
 
-# Display the modified image
-plt.figure()
-plt.title('Modified Original Image')
-plt.imshow(originalImage)
-plt.show()
+	""" Adding the result of computation to the archive """
 
-""" Adding the result of computation to the archive """
+	# Adding image_id attribute to the circle
+	C.image_id = imageName
 
-# Adding image_id attribute to the circle
-C.image_id = imageName
-
-# Adding circle to archive
-pa: Archive = Archive.load(Archive.PROMPT)
-pa.append(C)
-pa.save()
+	# Adding circle to archive
+	if (flag == "real"):
+		pa: Archive = Archive.load(Archive.REAL)
+	elif (flag == "prompt"):
+		pa: Archive = Archive.load(Archive.PROMPT)
+	elif (flag == "variation"):
+		pa: Archive = Archive.load(Archive.VARIATION)
+	pa.append({imageName: C})
+	pa.save()
