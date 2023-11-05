@@ -27,8 +27,8 @@ png_images = [f for f in os.listdir(where) if f.endswith(".png")]
 
 number = -1
 while True:
-	for i, my_images in enumerate(png_images):
-		print(f"{i}: {my_images}")
+	for i in range(len(png_images)):
+		print(f"{i}: {flag}.{i}")
 	number = input("Choose one number in: ")
 	try:
 		number = int(number)
