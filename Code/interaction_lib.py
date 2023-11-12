@@ -5,7 +5,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 import math
-from circle import circle
+from Code.circle import circle
 
 matplotlib.use('TkAgg')
 

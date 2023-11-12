@@ -3,10 +3,10 @@ import numpy as np
 import os
 import threading
 
-from expectation_maximization import EM
-from interaction_lib import interactiveGuess
+from Code.expectation_maximization import EM
+from Code.interaction_lib import interactiveGuess
 from PIL import Image
-from archive import Archive
+from Code.archive import Archive
 
 import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')

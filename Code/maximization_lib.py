@@ -1,5 +1,5 @@
 import matplotlib
-from circle import *
+from Code.circle import *
 
 matplotlib.use('TkAgg')
 
