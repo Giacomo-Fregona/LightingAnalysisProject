@@ -3,6 +3,7 @@ File containing methods for saving and retrieving data coming from the lighting 
 """
 
 import pickle
+
 from circle import circle
 
 
@@ -17,7 +18,7 @@ class Archive(list):
 
 	@staticmethod
 	def load(which_archive):
-		with open(which_archive, 'rb') as file:
+		with open(which_archive, 'rb+') as file:
 			return pickle.load(file)
 
 	def save(self):
