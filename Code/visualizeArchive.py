@@ -26,7 +26,7 @@ data_dict has the following structure:
 data_dict = {}
 
 for item in data:
-	for key, values in item.items():
+	for key, values in item.items(): #key = nome immagine, values = C
 		if key not in data_dict:
 			data_dict[key] = {
 				'l00': [],
@@ -49,11 +49,11 @@ for item in data:
 		data_dict[key]['l21'].append(item[key].l21)
 		data_dict[key]['l22'].append(item[key].l22)
 
-for key1, values1 in data_dict.items():
-	print(key1 + ":")
-	for key2, values2 in values1.items():
-		print("\t" + key2 + ":")
-		for element in values2:
+for nome_immagine, coefficient_dict in data_dict.items():
+	print(nome_immagine + ":")
+	for coefficient_name, C_coeff_RGB in coefficient_dict.items():
+		print("\t" + coefficient_name + ":")
+		for element in C_coeff_RGB:
 			print("\t\t", end="")
 			print(element)
 
@@ -75,17 +75,82 @@ for key, values in data_dict.items():
 	
 	standard_deviations[key]= std_dev
 
-for key1, values1 in standard_deviations.items():
-	print(key1 + ":")
-	for key2, values2 in values1.items():
-		print("\t" + key2 + ":")
-		for element in values2:
+for nome_immagine, coefficient_dict in standard_deviations.items():
+	print(nome_immagine + ":")
+	for coefficient_name, C_coeff_RGB in coefficient_dict.items():
+		print("\t" + coefficient_name + ":")
+		for element in C_coeff_RGB:
 			print("\t\t", end="")
 			print(element)
 
 
 
+# Test "Figura 4"
 
+#Calcolo coefficienti normalizzati
+RGB = {'R':{
+		'l1m1': [],
+		'l10': [],
+		'l11': [],
+		'l2m2': [],
+		'l2m1': [],
+		'l20': [],
+		'l21': [],
+		'l22': []
+	},
+	'G': {
+		'l1m1': [],
+		'l10': [],
+		'l11': [],
+		'l2m2': [],
+		'l2m1': [],
+		'l20': [],
+		'l21': [],
+		'l22': []
+	},
+	'B': {
+		'l1m1': [],
+		'l10': [],
+		'l11': [],
+		'l2m2': [],
+		'l2m1': [],
+		'l20': [],
+		'l21': [],
+		'l22': []
+	}
+}
 
+for nome_immagine, coefficient_dict in data_dict.items():
+
+	l00 = coefficient_dict['l00']
+	for j in range(len(l00)):
+
+		for coefficient_name, C_coeff_RGB in coefficient_dict.items():
+
+			if coefficient_name != 'l00':
+				C_coeff_RGB = [C_coeff_RGB[j][i] / l00[j][i] for i in range(3)]
+
+				RGB['R'][coefficient_name].append(C_coeff_RGB[0])
+				RGB['G'][coefficient_name].append(C_coeff_RGB[1])
+				RGB['B'][coefficient_name].append(C_coeff_RGB[2])
+
+# Calcolo della mediana
+median = {'R':{},
+	'G': {},
+	'B': {}
+}
+
+for color in ['R', 'G', 'B']:
+	for coeff in ['l1m1', 'l10', 'l11', 'l2m2', 'l2m1', 'l20', 'l21', 'l22']:
+		l = RGB[color][coeff]
+		l.sort()
+		if (len(l)%2) == 0:
+			m = (l[int(len(l)/2)] + l[int(len(l)/2+1)])/2
+		else:
+			m = l[int(len(l)/2)]
+
+		median[color][coeff] = m
+
+print(median)
 
 
