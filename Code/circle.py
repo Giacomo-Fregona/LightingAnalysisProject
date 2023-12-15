@@ -29,7 +29,7 @@ class circle:
 		self.l22 = np.zeros(shape=(3), dtype=float)
 
 	def __repr__(self):
-		return f"\n\tCircle with center ({self.center.x}, {self.center.y}) and radius {self.r}.\n\t\tl00:{self.l00}, \n\t\tl1m1:{self.l1m1},\n\t\tl10:{self.l10},\n\t\tl11:{self.l11},\n\t\tl2m2:{self.l2m2},\n\t\tl2m1:{self.l2m1},\n\t\tl20:{self.l20},\n\t\tl21:{self.l21},\n\t\tl22:{self.l22}\n\n"
+		return f"\nCircle in {self.image_id} \n\thas center ({self.center.x}, {self.center.y}) and radius {self.r}.\n\t\tl00:{self.l00}, \n\t\tl1m1:{self.l1m1},\n\t\tl10:{self.l10},\n\t\tl11:{self.l11},\n\t\tl2m2:{self.l2m2},\n\t\tl2m1:{self.l2m1},\n\t\tl20:{self.l20},\n\t\tl21:{self.l21},\n\t\tl22:{self.l22}\n\n"
 
 	def __contains__(self, P: point):
 		return (P.x - self.center.x) ** 2 + (P.y - self.center.y) ** 2 < self.r ** 2
