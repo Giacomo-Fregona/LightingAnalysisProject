@@ -103,7 +103,7 @@ for im in png_images:
 			pa: Archive = Archive.load(Archive.PROMPT)
 		elif (flag == "variation"):
 			pa: Archive = Archive.load(Archive.VARIATION)
-		pa.append({imageName: C})
+		pa.append(C)
 		pa.save()
 #
 # for im in png_images:
