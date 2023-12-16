@@ -28,6 +28,60 @@ class circle:
 		self.l21 = np.zeros(shape=(3), dtype=float)
 		self.l22 = np.zeros(shape=(3), dtype=float)
 
+	def set_coeff(self, coeff:str, value: np.ndarray):
+		'''
+		Setting the coefficient using string as input. Value is an array
+		'''
+		match coeff:
+			case 'l00':
+				self.l00 = value
+			case 'l1m1':
+				self.l1m1 = value
+			case 'l10':
+				self.l10 = value
+			case 'l11':
+				self.l11 = value
+			case 'l2m2':
+				self.l2m2 = value
+			case 'l2m1':
+				self.l2m1 = value
+			case 'l20':
+				self.l20 = value
+			case 'l21':
+				self.l21 = value
+			case 'l22':
+				self.l22 = value
+			case _:
+				raise Exception(f'Unvalid input coeff for the set_coeff method: {coeff}')
+
+	def get_coeff(self, coeff:str):
+		'''
+		Setting the coefficient using string as input. Value is an array
+		'''
+		match coeff:
+			case 'l00':
+				return self.l00
+			case 'l1m1':
+				return self.l1m1
+			case 'l10':
+				return self.l10
+			case 'l11':
+				return self.l11
+			case 'l2m2':
+				return self.l2m2
+			case 'l2m1':
+				return self.l2m1
+			case 'l20':
+				return self.l20
+			case 'l21':
+				return self.l21
+			case 'l22':
+				return self.l22
+			case _:
+				raise Exception(f'Unvalid input coeff for the set_coeff method: {coeff}')
+
+
+
 	def __repr__(self):
 		return f"\nCircle in {self.image_id} \n\thas center ({self.center.x}, {self.center.y}) and radius {self.r}.\n\t\tl00:{self.l00}, \n\t\tl1m1:{self.l1m1},\n\t\tl10:{self.l10},\n\t\tl11:{self.l11},\n\t\tl2m2:{self.l2m2},\n\t\tl2m1:{self.l2m1},\n\t\tl20:{self.l20},\n\t\tl21:{self.l21},\n\t\tl22:{self.l22}\n\n"
 
