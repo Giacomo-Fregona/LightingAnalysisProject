@@ -28,6 +28,8 @@ class circle:
 		self.l21 = np.zeros(shape=(3), dtype=float)
 		self.l22 = np.zeros(shape=(3), dtype=float)
 
+	coeff_list = ['l00', 'l1m1', 'l10', 'l11', 'l2m2', 'l2m1', 'l20', 'l21', 'l22'] # Static list of coefficients id as strings
+
 	def set_coeff(self, coeff:str, value: np.ndarray):
 		'''
 		Setting the coefficient using string as input. Value is an array
