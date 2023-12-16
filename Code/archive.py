@@ -3,9 +3,7 @@ File containing methods for saving and retrieving data coming from the lighting 
 """
 
 import pickle
-
-from circle import circle
-
+from Code.circle import circle
 
 class Archive(list):
 	REAL = './Archive/real.pkl'

@@ -8,10 +8,10 @@ import numpy as np
 from scipy.ndimage import gaussian_filter
 from PIL import Image
 
-import expectation_lib as ex
-import maximization_lib as ma
-from circle import circle
-from interaction_lib import eraser, interactiveGuess
+import Code.expectation_lib as ex
+import Code.maximization_lib as ma
+from Code.circle import circle
+from Code.interaction_lib import eraser, interactiveGuess
 
 matplotlib.use('TkAgg')
 

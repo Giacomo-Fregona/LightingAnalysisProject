@@ -23,6 +23,148 @@ file.close()
 data_dict had the following structure:
 	'name_of_the_image': 'name_of_the_coefficient': array with vector of values
 """
+data_dict = {}
+
+for item in data:
+	for key, values in item.items(): #key = nome immagine, values = C
+		if key not in data_dict:
+			data_dict[key] = {
+				'l00': [],
+				'l1m1': [],
+				'l10': [],
+				'l11': [],
+				'l2m2': [],
+				'l2m1': [],
+				'l20': [],
+				'l21': [],
+				'l22': []
+			}
+		data_dict[key]['l00'].append(item[key].l00)
+		data_dict[key]['l1m1'].append(item[key].l1m1)
+		data_dict[key]['l10'].append(item[key].l10)
+		data_dict[key]['l11'].append(item[key].l11)
+		data_dict[key]['l2m2'].append(item[key].l2m2)
+		data_dict[key]['l2m1'].append(item[key].l2m1)
+		data_dict[key]['l20'].append(item[key].l20)
+		data_dict[key]['l21'].append(item[key].l21)
+		data_dict[key]['l22'].append(item[key].l22)
+
+for nome_immagine, coefficient_dict in data_dict.items():
+	print(nome_immagine + ":")
+	for coefficient_name, C_coeff_RGB in coefficient_dict.items():
+		print("\t" + coefficient_name + ":")
+		for element in C_coeff_RGB:
+			print("\t\t", end="")
+			print(element)
+
+
+standard_deviations = {}
+
+for key, values in data_dict.items():
+	std_dev = {
+		'l00': np.std(values['l00'], axis=0),
+		'l1m1': np.std(values['l1m1'], axis=0),
+		'l10': np.std(values['l10'], axis=0),
+		'l11': np.std(values['l11'], axis=0),
+		'l2m2': np.std(values['l2m2'], axis=0),
+		'l2m1': np.std(values['l2m1'], axis=0),
+		'l20': np.std(values['l20'], axis=0),
+		'l21': np.std(values['l21'], axis=0),
+		'l22': np.std(values['l22'], axis=0)
+	}
+	
+	standard_deviations[key]= std_dev
+
+for nome_immagine, coefficient_dict in standard_deviations.items():
+	print(nome_immagine + ":")
+	for coefficient_name, C_coeff_RGB in coefficient_dict.items():
+		print("\t" + coefficient_name + ":")
+		for element in C_coeff_RGB:
+			print("\t\t", end="")
+			print(element)
+
+
+
+# Test "Figura 4" fatto assieme
+
+#Calcolo coefficienti normalizzati
+RGB = {'R':{
+		'l1m1': [],
+		'l10': [],
+		'l11': [],
+		'l2m2': [],
+		'l2m1': [],
+		'l20': [],
+		'l21': [],
+		'l22': []
+	},
+	'G': {
+		'l1m1': [],
+		'l10': [],
+		'l11': [],
+		'l2m2': [],
+		'l2m1': [],
+		'l20': [],
+		'l21': [],
+		'l22': []
+	},
+	'B': {
+		'l1m1': [],
+		'l10': [],
+		'l11': [],
+		'l2m2': [],
+		'l2m1': [],
+		'l20': [],
+		'l21': [],
+		'l22': []
+	}
+}
+
+for nome_immagine, coefficient_dict in data_dict.items():
+
+	l00 = coefficient_dict['l00']
+	for j in range(len(l00)):
+
+		for coefficient_name, C_coeff_RGB in coefficient_dict.items():
+
+			if coefficient_name != 'l00':
+				C_coeff_RGB = [C_coeff_RGB[j][i] / l00[j][i] for i in range(3)]
+
+				RGB['R'][coefficient_name].append(C_coeff_RGB[0])
+				RGB['G'][coefficient_name].append(C_coeff_RGB[1])
+				RGB['B'][coefficient_name].append(C_coeff_RGB[2])
+
+# Calcolo della mediana
+median = {'R':{},
+	'G': {},
+	'B': {}
+}
+
+for color in ['R', 'G', 'B']:
+	for coeff in ['l1m1', 'l10', 'l11', 'l2m2', 'l2m1', 'l20', 'l21', 'l22']:
+		l = RGB[color][coeff]
+		l.sort()
+		if (len(l)%2) == 0:
+			m = (l[int(len(l)/2)] + l[int(len(l)/2+1)])/2
+		else:
+			m = l[int(len(l)/2)]
+
+		median[color][coeff] = m
+
+print(median)
+
+
+
+
+
+
+
+
+# Test Aggiunto da Dario
+"""
+data_dict had the following structure:
+	'name_of_the_image': 'name_of_the_coefficient': array with vector of values
+"""
 print(data)
 print()
 
@@ -37,17 +179,17 @@ for i in range(1, len(data)):
 			print()
 		else:
 			l00List = [myC.l00 for myC in listOfCircleInSameImage]
-			l1m1List = [[myC.l1m1[k]/myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
-			l10List = [[myC.l10[k]/myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
-			l11List = [[myC.l11[k]/myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
-			l2m2List = [[myC.l2m2[k]/myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
-			l2m1List = [[myC.l2m1[k]/myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
-			l20List = [[myC.l20[k]/myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
-			l21List = [[myC.l21[k]/myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
-			l22List = [[myC.l22[k]/myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
-			
+			l1m1List = [[myC.l1m1[k] / myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
+			l10List = [[myC.l10[k] / myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
+			l11List = [[myC.l11[k] / myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
+			l2m2List = [[myC.l2m2[k] / myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
+			l2m1List = [[myC.l2m1[k] / myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
+			l20List = [[myC.l20[k] / myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
+			l21List = [[myC.l21[k] / myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
+			l22List = [[myC.l22[k] / myC.l00[k] for k in range(3)] for myC in listOfCircleInSameImage]
+
 			print(listOfCircleInSameImage[0].image_id)
-			
+
 			stdl1m1 = np.std(l1m1List, axis=0)
 			stdl10 = np.std(l10List, axis=0)
 			stdl11 = np.std(l11List, axis=0)
@@ -64,14 +206,13 @@ for i in range(1, len(data)):
 			print(f"\tvar l20: {stdl20}")
 			print(f"\tvar l21: {stdl21}")
 			print(f"\tvar l22: {stdl22}")
-			
+
 			print(f"np.quantile(l1m1List, 0.35, axis=0): {np.quantile(l1m1List, 0.35, axis=0)}")
 			print(f"np.quantile(l1m1List, 0.5, axis=0): {np.quantile(l1m1List, 0.5, axis=0)}")
 			print(f"np.quantile(l1m1List, 0.65, axis=0): {np.quantile(l1m1List, 0.65, axis=0)}")
 			print()
-			
-		listOfCircleInSameImage = [data[i]]
 
+		listOfCircleInSameImage = [data[i]]
 
 
 
