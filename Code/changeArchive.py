@@ -1,3 +1,8 @@
+'''
+File that changes archives of dicts to archives of circles (solution of an issue in working phase)
+'''
+
+
 import pickle
 import os
 
