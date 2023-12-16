@@ -1,6 +1,7 @@
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
+from Code.circle import circle
 
 def distance(array1, array2):
 	return np.sqrt(np.sum((array1 - array2) ** 2))
@@ -13,42 +14,30 @@ while True:
 	else:
 		print("Error: Answer must be real or dalle2")
 
-fileToOpen = "./Archive/"+flag+".pkl"
+fileToOpen = "./Archive/" + flag + ".pkl"
 with open(fileToOpen, "rb") as file:
 	data = pickle.load(file)
 file.close()
-
 
 """
 data_dict had the following structure:
 	'name_of_the_image': 'name_of_the_coefficient': array with vector of values
 """
+
+# Creating a dict with image_id keys
 data_dict = {}
+C: circle
+for C in data:
 
-for item in data:
-	for key, values in item.items(): #key = nome immagine, values = C
-		if key not in data_dict:
-			data_dict[key] = {
-				'l00': [],
-				'l1m1': [],
-				'l10': [],
-				'l11': [],
-				'l2m2': [],
-				'l2m1': [],
-				'l20': [],
-				'l21': [],
-				'l22': []
-			}
-		data_dict[key]['l00'].append(item[key].l00)
-		data_dict[key]['l1m1'].append(item[key].l1m1)
-		data_dict[key]['l10'].append(item[key].l10)
-		data_dict[key]['l11'].append(item[key].l11)
-		data_dict[key]['l2m2'].append(item[key].l2m2)
-		data_dict[key]['l2m1'].append(item[key].l2m1)
-		data_dict[key]['l20'].append(item[key].l20)
-		data_dict[key]['l21'].append(item[key].l21)
-		data_dict[key]['l22'].append(item[key].l22)
+	# Initializing data_dict(image_id) if not already existing
+	if C.image_id not in data_dict:
+		data_dict[C.image_id] = {coeff: [] for coeff in C.coeff_list}
 
+	# Adding coefficients of the considered C
+	for coeff in circle.coeff_list:
+		data_dict[C.image_id][coeff].append(C.get_coeff(coeff))
+
+# Printing data_dict
 for nome_immagine, coefficient_dict in data_dict.items():
 	print(nome_immagine + ":")
 	for coefficient_name, C_coeff_RGB in coefficient_dict.items():
@@ -57,24 +46,17 @@ for nome_immagine, coefficient_dict in data_dict.items():
 			print("\t\t", end="")
 			print(element)
 
-
+# Cycling in the image to fill the standard_deviations dict
 standard_deviations = {}
+for image_id, values in data_dict.items():
 
-for key, values in data_dict.items():
-	std_dev = {
-		'l00': np.std(values['l00'], axis=0),
-		'l1m1': np.std(values['l1m1'], axis=0),
-		'l10': np.std(values['l10'], axis=0),
-		'l11': np.std(values['l11'], axis=0),
-		'l2m2': np.std(values['l2m2'], axis=0),
-		'l2m1': np.std(values['l2m1'], axis=0),
-		'l20': np.std(values['l20'], axis=0),
-		'l21': np.std(values['l21'], axis=0),
-		'l22': np.std(values['l22'], axis=0)
-	}
-	
-	standard_deviations[key]= std_dev
+	# Computing standard deviation on every coefficient
+	std_dev = {coeff: np.std(values['l00'], axis=0) for coeff in circle.coeff_list}
 
+	# Adding the result to the dict
+	standard_deviations[image_id] = std_dev
+
+# Printing standard_deviations
 for nome_immagine, coefficient_dict in standard_deviations.items():
 	print(nome_immagine + ":")
 	for coefficient_name, C_coeff_RGB in coefficient_dict.items():
@@ -84,40 +66,15 @@ for nome_immagine, coefficient_dict in standard_deviations.items():
 			print(element)
 
 
-
-# Test "Figura 4" fatto assieme
+'''
+ Test "Figura 4" fatto assieme
+'''
 
 #Calcolo coefficienti normalizzati
-RGB = {'R':{
-		'l1m1': [],
-		'l10': [],
-		'l11': [],
-		'l2m2': [],
-		'l2m1': [],
-		'l20': [],
-		'l21': [],
-		'l22': []
-	},
-	'G': {
-		'l1m1': [],
-		'l10': [],
-		'l11': [],
-		'l2m2': [],
-		'l2m1': [],
-		'l20': [],
-		'l21': [],
-		'l22': []
-	},
-	'B': {
-		'l1m1': [],
-		'l10': [],
-		'l11': [],
-		'l2m2': [],
-		'l2m1': [],
-		'l20': [],
-		'l21': [],
-		'l22': []
-	}
+RGB = {
+	'R': {coeff: [] for coeff in circle.coeff_list},
+	'G': {coeff: [] for coeff in circle.coeff_list},
+	'B': {coeff: [] for coeff in circle.coeff_list}
 }
 
 for nome_immagine, coefficient_dict in data_dict.items():
@@ -135,19 +92,19 @@ for nome_immagine, coefficient_dict in data_dict.items():
 				RGB['B'][coefficient_name].append(C_coeff_RGB[2])
 
 # Calcolo della mediana
-median = {'R':{},
-	'G': {},
-	'B': {}
-}
+median = {'R': {},
+		  'G': {},
+		  'B': {}
+		  }
 
 for color in ['R', 'G', 'B']:
 	for coeff in ['l1m1', 'l10', 'l11', 'l2m2', 'l2m1', 'l20', 'l21', 'l22']:
 		l = RGB[color][coeff]
 		l.sort()
-		if (len(l)%2) == 0:
-			m = (l[int(len(l)/2)] + l[int(len(l)/2+1)])/2
+		if (len(l) % 2) == 0:
+			m = (l[int(len(l) / 2)] + l[int(len(l) / 2 + 1)]) / 2
 		else:
-			m = l[int(len(l)/2)]
+			m = l[int(len(l) / 2)]
 
 		median[color][coeff] = m
 
@@ -213,6 +170,3 @@ for i in range(1, len(data)):
 			print()
 
 		listOfCircleInSameImage = [data[i]]
-
-
-
