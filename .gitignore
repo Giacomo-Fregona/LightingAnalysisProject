@@ -2,6 +2,7 @@ Code/__pycache__
 venv
 .idea
 Archive/*.pkl
+ArchiveDario/real.pkl
 Samples/real/*.png
 Samples/variation/*.png
 Samples/prompt/*.png
