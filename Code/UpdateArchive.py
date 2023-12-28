@@ -4,7 +4,7 @@ from PIL import Image
 
 if __name__ == '__main__':
 
-	A = Archive.load(Archive.PROMPT_DARIO)
+	A = Archive.load(Archive.REAL_DARIO)
 	print(len(A))
 	if input('Save changes? [y/n]') == 'y':
 		A.save()
