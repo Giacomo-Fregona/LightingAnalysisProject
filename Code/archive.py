@@ -30,10 +30,7 @@ class Archive(list):
 		# Retrieving the archive
 		with open(which_archive, 'rb') as file:
 			archive = pickle.load(file)
-
 		archive.file_name = which_archive
-
-		print(len(archive))
 
 		# Loading images in each circle
 		C: circle
@@ -44,7 +41,7 @@ class Archive(list):
 				C.image = np.asarray(Image.open(C.image_id), dtype=np.uint8)
 			except:
 
-				#Handling case image not in the /Samples database
+				# Handling case image not in the /Samples database
 				if C.image is not None:
 					plt.title(f'IMAGE NOT FOUND IN SAMPLES FOLDER: {C.image_id}')
 					plt.imshow(C.image)
