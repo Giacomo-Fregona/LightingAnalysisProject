@@ -3,7 +3,7 @@ File containing methods for saving and retrieving data coming from the lighting 
 """
 
 import pickle
-from Code.circle import circle
+from circle import circle
 
 from PIL import Image
 import numpy as np

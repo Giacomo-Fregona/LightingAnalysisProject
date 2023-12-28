@@ -3,7 +3,7 @@ import numpy as np
 from scipy import ndimage
 from matplotlib import pyplot as plt
 from PIL import Image
-from Code.point import point
+from point import point
 import time
 
 pixelLength = 1024

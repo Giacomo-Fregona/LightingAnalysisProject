@@ -1,5 +1,5 @@
-from Code.archive import Archive
-from Code.circle import circle
+from archive import Archive
+from circle import circle
 from PIL import Image
 
 if __name__ == '__main__':
