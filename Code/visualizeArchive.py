@@ -1,7 +1,7 @@
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
-from Code.circle import circle
+from circle import circle
 
 def distance(array1, array2):
 	return np.sqrt(np.sum((array1 - array2) ** 2))
