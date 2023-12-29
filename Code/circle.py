@@ -361,7 +361,7 @@ class circle:
 		# In case image has not been defined, we can use the image self.image
 		if originalImage is None:
 			if not (self.image is None):
-				originalImage = C.image.copy()
+				originalImage = self.image.copy()
 			else:
 				raise Exception(
 					'Please provide an image as input of the onImage method or define the self.image variable')
