@@ -31,6 +31,8 @@ def correct_circle(A: Archive, archive_index: int):
 	newC = interactiveGuess(originalImage)
 	newC = EM(originalImage, newC, rounds=10, visual=0, finalVisual=0, erase=1)
 	newC.estimateCoefficients(originalImage, M=1000)
+	newC.image_id =oldC.image_id
+	newC.image = oldC.image
 
 	# Visualizing the result
 	matplotlib.rcParams['figure.figsize'] = [20, 7]
@@ -44,6 +46,8 @@ def correct_circle(A: Archive, archive_index: int):
 
 	# Eventually saving changes
 	if input('Save changes? [y/n]') == 'y':
+		A.pop(archive_index)
+		A.append(newC)
 		A.save()
 		print('Saved')
 	else:
@@ -56,6 +60,6 @@ if __name__ == '__main__':
 
 
 	A: Archive = Archive.load(Archive.PROMPT_DARIO)
-	A.visualize(archive_index=18)
-	correct_circle(A, 18)
+	A.visualize() #archive_index=18
+	# correct_circle(A, 18)
 
