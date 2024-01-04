@@ -1,4 +1,6 @@
 import matplotlib
+import numpy as np
+from PIL import Image
 from matplotlib import pyplot as plt
 
 from expectation_maximization import EM
@@ -31,8 +33,8 @@ def correct_circle(A: Archive, archive_index: int):
 	newC = interactiveGuess(originalImage)
 	newC = EM(originalImage, newC, rounds=10, visual=0, finalVisual=0, erase=1)
 	newC.estimateCoefficients(originalImage, M=1000)
-	newC.image_id =oldC.image_id
-	newC.image = oldC.image
+	newC.image_id = oldC.image_id
+	newC.image = np.asarray(Image.open(newC.image_id), dtype=np.uint8)
 
 	# Visualizing the result
 	matplotlib.rcParams['figure.figsize'] = [20, 7]
