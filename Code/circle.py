@@ -30,6 +30,10 @@ class circle:
 
 	coeff_list = ['l00', 'l1m1', 'l10', 'l11', 'l2m2', 'l2m1', 'l20', 'l21', 'l22'] # Static list of coefficients id as strings
 
+	def __eq__(self, other):
+		"""self == other"""
+		return (self.center.x == other.center.x) and (self.center.y == other.center.y) and (self.r == other.r) and (self.image_id == other.image_id)
+
 	def set_coeff(self, coeff:str, value: np.ndarray):
 		'''
 		Setting the coefficient using string as input. Value is an array
