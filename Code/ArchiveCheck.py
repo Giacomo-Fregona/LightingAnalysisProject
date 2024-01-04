@@ -69,9 +69,14 @@ def correct_circle(A: Archive, archive_index: int):
 
 
 if __name__ == '__main__':
+	A: Archive = Archive.load(Archive.REAL_DARIO)
+	print(A)
+	#
+	# image_id = './Samples/prompt/prompt_12.png'
+	# to_be_fixed = A.as_dict()[image_id]
+	# for C in to_be_fixed:
+	# 	correct_circle(A, A.index(C))
+	# 	A = Archive.load(A.file_name)
 
-
-	A: Archive = Archive.load(Archive.PROMPT_DARIO)
-	A.visualize() #archive_index=18
-	# correct_circle(A, 18)
-
+	A.visualize()  # archive_index=18
+	# A.save()
