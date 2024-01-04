@@ -28,10 +28,16 @@ def correct_circle(A: Archive, archive_index: int):
 	plt.imshow(oldC.fastRenderedOnImage())
 	plt.show()
 
+	if input('Exit? [y/n]') == 'y':
+		return
+
 	# Obtaining a new circle
 	originalImage = oldC.image.copy()
 	newC = interactiveGuess(originalImage)
-	newC = EM(originalImage, newC, rounds=10, visual=0, finalVisual=0, erase=1)
+	if input('Only guess procedure? [y/n]') == 'y':
+		pass
+	else:
+		newC = EM(originalImage, newC, rounds=10, visual=0, finalVisual=0, erase=1)
 	newC.estimateCoefficients(originalImage, M=1000)
 	newC.image_id = oldC.image_id
 	newC.image = np.asarray(Image.open(newC.image_id), dtype=np.uint8)
@@ -54,8 +60,12 @@ def correct_circle(A: Archive, archive_index: int):
 		print('Saved')
 	else:
 		print('Not saved')
-
-
+		if input('Delete image? [y/n]') == 'y':
+			A.pop(archive_index)
+			A.save()
+			print('Deleted')
+		else:
+			print('Not deleted')
 
 
 if __name__ == '__main__':
