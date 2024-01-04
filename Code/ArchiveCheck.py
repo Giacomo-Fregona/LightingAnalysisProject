@@ -10,20 +10,20 @@ from archive import Archive
 
 def correct_circle(A: Archive, archive_index: int):
 	"""
-	Correcting a wrong circle in the archive
-	@param A: The archive
-	@param archive_index: The index of the circle in the archive (in images is represented inside square brackets)
-	@return: None
-	"""
+    Correcting a wrong circle in the archive
+    @param A: The archive
+    @param archive_index: The index of the circle in the archive (in images is represented inside square brackets)
+    @return: None
+    """
 
 	oldC: circle = A[archive_index]
 
 	# Representing the old circle
 	matplotlib.rcParams['figure.figsize'] = [20, 7]
-	plt.subplot(121)# Subplot 1: only circle
+	plt.subplot(121)  # Subplot 1: only circle
 	plt.title(f"Circle to be corrected")
 	plt.imshow(oldC.onImage())
-	plt.subplot(122) # Subplot 2: rendered sphere
+	plt.subplot(122)  # Subplot 2: rendered sphere
 	plt.title("Actual rendering")
 	plt.imshow(oldC.fastRenderedOnImage())
 	plt.show()
