@@ -193,7 +193,7 @@ def interactiveGuess(image,
 						intersection.append([x, y_1])
 						intersection.append([x, y_2])
 
-			print("The intersection is: \n", np.array(intersection))
+			# print("The intersection is: \n", np.array(intersection))
 			if len(intersection) < 1:
 				print("Empty intersection found.")
 				tellme('Not able to find points in the intersection. Restarting...')
@@ -229,4 +229,4 @@ def interactiveGuess(image,
 		C.remove()
 
 	print(f"Result of interactive guess: {C}.\n --- END OF INTERACTIVE GUESS --- ")
-	return circle(center[1], center[0], r, image=image)  # inverted coordinates
+	return circle(int(center[1]), int(center[0]), int(r), image=image)  # inverted coordinates
