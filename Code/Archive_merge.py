@@ -10,22 +10,20 @@ from archive import Archive
 import copy
 
 if __name__ == '__main__':
-	A: Archive = Archive.load(Archive.PROMPT)
-	D: Archive = Archive.load(Archive.PROMPT_DARIO)
-	G: Archive = Archive.load(Archive.PROMPT_GIACOMO)
-	print(A, D, G)
+	A: Archive = Archive.load(Archive.REAL)
+	D: Archive = Archive.load(Archive.REAL_DARIO)
+	print(A, D)
 
 	A_images = set()
-	D_images: set = {0, 1, 2, 3, 5, 7, 8, 9, 10, 11, 12}
-	G_images: set = {17, 16, 15, 24, 13, 25, 14, 31, 36, 33, 30, 35, 38, 26, 29, 37, 32, 18, 20, 21, 22, 23, 27, 34}
+	D_images: set = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+					 27, 28, 29, 30, 31, 32, 33, 34, 35, 36}
 
 	# Checking the sets are disjoint
-	if len((A_images.union(D_images)).union(G_images)) != (len(A_images) + len(D_images) + len(G_images)):
+	if len(A_images.union(D_images)) != (len(A_images) + len(D_images)):
 		raise Exception('Nontrivial intersection')
 
-	A_images = set(f'./Samples/prompt/prompt_{number}.png' for number in A_images)
-	D_images = set(f'./Samples/prompt/prompt_{number}.png' for number in D_images)
-	G_images = set(f'./Samples/prompt/prompt_{number}.png' for number in G_images)
+	A_images = set(f'./Samples/real/real_{number}.png' for number in A_images)
+	D_images = set(f'./Samples/real/real_{number}.png' for number in D_images)
 
 	# Removing from archive the undesired images
 	to_remove = []
@@ -49,14 +47,6 @@ if __name__ == '__main__':
 			print(f'Added')
 
 	print('Added from D:', A)
-
-	G_dict = G.as_dict()
-	for image_id in G_images:
-		for C in G_dict[image_id]:
-			A.append(copy.deepcopy(C))
-			print(f'Added')
-
-	print('Added from G:', A)
 
 	if input('Save changes? [y/n]') == 'y':
 		A.save()
