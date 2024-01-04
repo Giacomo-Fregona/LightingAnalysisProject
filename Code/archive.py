@@ -25,6 +25,14 @@ class Archive(list):
 		self.file_name = file_name
 		super().__init__()
 
+	def __repr__(self):
+
+		self_dict = self.as_dict()
+		output = f'\nArchive {self.file_name} containing {len(self_dict.keys())} images.'
+		for image_id in self_dict.keys():
+			output += f'\n\t{image_id} --> {len(self_dict[image_id])} circles'
+		return output
+
 	@staticmethod
 	def load(which_archive):
 
