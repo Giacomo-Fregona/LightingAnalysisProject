@@ -84,7 +84,7 @@ def coeff_pedix(coeff: str):
 
 if __name__ == '__main__':
 
-	for A_filename in [Archive.REAL, Archive.PROMPT]:
+	for A_filename in [Archive.REAL, Archive.PROMPT, Archive.VARIATION]:
 
 		# Loading the archive
 		A: Archive = Archive.load(A_filename)
@@ -109,12 +109,12 @@ if __name__ == '__main__':
 		for coeff in circle.coeff_list:
 
 			# Retrieving data (only red)
-			# x = [RGB[0] for RGB in data_1[coeff]]
-			# y = [RGB[0] for RGB in data_2[coeff]]
+			x = [RGB[0] for RGB in data_1[coeff]]
+			y = [RGB[0] for RGB in data_2[coeff]]
 
-			# Normalized version
-			x = [RGB[0] / (data_1['l00'][i][0]) for i, RGB in enumerate(data_1[coeff])]
-			y = [RGB[0] / (data_2['l00'][i][0]) for i, RGB in enumerate(data_2[coeff])]
+			# # Normalized version
+			# x = [RGB[0] / (data_1['l00'][i][0]) for i, RGB in enumerate(data_1[coeff])]
+			# y = [RGB[0] / (data_2['l00'][i][0]) for i, RGB in enumerate(data_2[coeff])]
 
 
 			# Plotting the scatter
