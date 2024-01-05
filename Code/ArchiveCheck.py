@@ -7,8 +7,10 @@ from expectation_maximization import EM
 from interaction_lib import interactiveGuess
 from circle import circle
 from archive import Archive
+import copy
 
-def correct_circle(A: Archive, archive_index: int):
+
+def correct_circle(A: Archive, archive_index: int = None, C: circle = None):
 	"""
     Correcting a wrong circle in the archive
     @param A: The archive
@@ -16,7 +18,10 @@ def correct_circle(A: Archive, archive_index: int):
     @return: None
     """
 
-	oldC: circle = A[archive_index]
+	if not (archive_index is None):
+		oldC: circle = A[archive_index]
+	else:
+		oldC: circle = copy.deepcopy(C)
 
 	# Representing the old circle
 	matplotlib.rcParams['figure.figsize'] = [20, 7]
@@ -61,7 +66,7 @@ def correct_circle(A: Archive, archive_index: int):
 	else:
 		print('Not saved')
 		if input('Delete image? [y/n]') == 'y':
-			A.pop(archive_index)
+			A.pop(A.index(oldC))
 			A.save()
 			print('Deleted')
 		else:
@@ -69,14 +74,38 @@ def correct_circle(A: Archive, archive_index: int):
 
 
 if __name__ == '__main__':
-	A: Archive = Archive.load(Archive.REAL_DARIO)
+	A: Archive = Archive.load(Archive.VARIATION)
+	A_dict = A.as_dict()
 	print(A)
-	#
-	# image_id = './Samples/prompt/prompt_12.png'
-	# to_be_fixed = A.as_dict()[image_id]
-	# for C in to_be_fixed:
-	# 	correct_circle(A, A.index(C))
-	# 	A = Archive.load(A.file_name)
+	A.file_name = Archive.VARIATION
 
-	A.visualize()  # archive_index=18
-	# A.save()
+	to_be_fixed_indexes = [49] # Indexes to be corrected
+	to_be_deleted_indexes = [68, 71, 72, 73, 74, 75, 125, 126, 129, 130] # Indexes to be deleted
+	to_be_deleted_images = [5, 1, 8, 13, 14]
+
+	for image in to_be_deleted_images:
+		for circle in A_dict[f'./Samples/variation/variation_{image}.png']:
+			to_be_deleted_indexes.append(A.index(circle))
+
+	to_be_fixed = [copy.deepcopy(A[index]) for index in to_be_fixed_indexes]
+	to_be_deleted = [copy.deepcopy(A[index]) for index in to_be_deleted_indexes]
+	for C in to_be_fixed:
+		correct_circle(A, A.index(C))
+		A = Archive.load(A.file_name)
+
+	for C in to_be_deleted:
+		A.pop(A.index(C))
+		A.save()
+		print('Deleted')
+		A = Archive.load(A.file_name)
+
+	print(A)
+
+
+
+
+
+
+
+	# A.visualize()  # archive_index=18
+# A.save()
