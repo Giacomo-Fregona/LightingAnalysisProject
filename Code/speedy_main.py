@@ -10,6 +10,7 @@ from Code.archive import Archive
 
 import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')
+matplotlib.rcParams['figure.figsize'] = [17, 17]
 
 ##### SAMPLE USAGE OF THE REPOSITORY FUNCTIONS #####
 
@@ -45,6 +46,8 @@ for im in png_images:
 			except ValueError:
 				print("Invalid input. Please enter a number")
 
+		plt.close()
+
 	# Create a separate thread for user input
 	input_thread = threading.Thread(target=get_number_of_spheres)
 	input_thread.daemon = True
@@ -66,6 +69,14 @@ for im in png_images:
 		allMyC[i] = interactiveGuess(originalImage)
 
 	d[im] = allMyC, allMyRendered, numberOfSpheres
+
+
+if (flag == "real"):
+	pa: Archive = Archive.load(Archive.REAL)
+elif (flag == "prompt"):
+	pa: Archive = Archive.load(Archive.PROMPT)
+elif (flag == "variation"):
+	pa: Archive = Archive.load(Archive.VARIATION)
 
 for im in png_images:
 	imageName = where + "/" + im
@@ -97,14 +108,9 @@ for im in png_images:
 		C.image_id = imageName
 
 		# Adding circle to archive
-		if (flag == "real"):
-			pa: Archive = Archive.load(Archive.REAL)
-		elif (flag == "prompt"):
-			pa: Archive = Archive.load(Archive.PROMPT)
-		elif (flag == "variation"):
-			pa: Archive = Archive.load(Archive.VARIATION)
 		pa.append(C)
-		pa.save()
+
+pa.save()
 #
 # for im in png_images:
 # 	imageName = where + "/" + im
