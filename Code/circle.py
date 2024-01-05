@@ -32,6 +32,10 @@ class circle:
 
 	def __eq__(self, other):
 		"""self == other"""
+		if type(other) == int:
+			return type(self) == int
+
+
 		return (self.center.x == other.center.x) and (self.center.y == other.center.y) and (self.r == other.r) and (self.image_id == other.image_id)
 
 	def set_coeff(self, coeff:str, value: np.ndarray):
