@@ -13,6 +13,7 @@ import copy
 def correct_circle(A: Archive, archive_index: int = None, C: circle = None):
 	"""
     Correcting a wrong circle in the archive
+    @param C: Circle to be corrected
     @param A: The archive
     @param archive_index: The index of the circle in the archive (in images is represented inside square brackets)
     @return: None
@@ -59,7 +60,7 @@ def correct_circle(A: Archive, archive_index: int = None, C: circle = None):
 
 	# Eventually saving changes
 	if input('Save changes? [y/n]') == 'y':
-		A.pop(archive_index)
+		A.pop(A.index(oldC))
 		A.append(newC)
 		A.save()
 		print('Saved')
