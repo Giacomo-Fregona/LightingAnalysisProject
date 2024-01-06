@@ -14,12 +14,6 @@ class Archive(list):
 	REAL = './Archive/real.pkl'
 	PROMPT = './Archive/prompt.pkl'
 	VARIATION = './Archive/variation.pkl'
-	REAL_DARIO = './ArchiveDario/real.pkl'
-	PROMPT_DARIO = './ArchiveDario/prompt.pkl'
-	VARIATION_DARIO = './ArchiveDario/variation.pkl'
-	REAL_GIACOMO = './ArchiveGiacomo/real.pkl'
-	PROMPT_GIACOMO = './ArchiveGiacomo/prompt.pkl'
-	VARIATION_GIACOMO = './ArchiveGiacomo/variation.pkl'
 
 	def __init__(self, file_name: str):
 		self.file_name = file_name
@@ -158,12 +152,8 @@ class Archive(list):
 
 
 if __name__ == '__main__':
-	# Archive bootstrapping
-	real_archive = Archive(Archive.REAL)
-	real_archive.save()
 
-	prompt_archive = Archive(Archive.PROMPT)
-	prompt_archive.save()
-
-	variation_archive = Archive(Archive.VARIATION)
-	variation_archive.save()
+	# Loading and visualizing the content of the real photos archive
+	realArchive: Archive = Archive.load(Archive.REAL)
+	print(realArchive)
+	realArchive.visualize()
