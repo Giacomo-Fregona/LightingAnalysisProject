@@ -1,20 +1,11 @@
-import pylab as pl
 from matplotlib import collections as mc
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
+from archive import Archive
 
-def distance(array1, array2):
-	return np.sqrt(np.sum((array1 - array2) ** 2))
-
-
-with open("./Archive/real.pkl", "rb") as file:
-	dataReal = pickle.load(file)
-file.close()
-
-with open("./Archive/prompt.pkl", "rb") as file:
-	dataPrompt = pickle.load(file)
-file.close()
+dataReal = Archive.load(Archive.REAL)
+dataPrompt = Archive.load(Archive.PROMPT)
 
 print("dataPrompt:")
 print(dataPrompt)
