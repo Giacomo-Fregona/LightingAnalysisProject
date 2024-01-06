@@ -15,29 +15,29 @@ class Archive(list):
 	PROMPT = './Archive/prompt.pkl'
 	VARIATION = './Archive/variation.pkl'
 
-	def __init__(self, file_name: str):
-		self.file_name = file_name
+	def __init__(self, fileName: str):
+		self.fileName = fileName
 		super().__init__()
 
 	def __repr__(self):
 
-		self_dict = self.as_dict()
-		output = f'\nArchive {self.file_name} containing {len(self_dict.keys())} images.'
-		for image_id in self_dict.keys():
-			output += f'\n\t{image_id} --> {len(self_dict[image_id])} circles'
+		selfDict = self.asDict()
+		output = f'\nArchive {self.fileName} containing {len(selfDict.keys())} images.'
+		for imageId in selfDict.keys():
+			output += f'\n\t{imageId} --> {len(selfDict[imageId])} circles'
 		return output
 
 	@staticmethod
-	def load(which_archive):
+	def load(whichArchive):
 
 		# Retrieving the archive
-		with open(which_archive, 'rb') as file:
+		with open(whichArchive, 'rb') as file:
 			archive = pickle.load(file)
-		archive.file_name = which_archive
+		archive.fileName = whichArchive
 
 		# Loading images in each circle
 		C: circle
-		to_remove = []
+		toRemove = []
 		for i in range(len(archive)):
 			C = archive[i]
 			try:
@@ -51,11 +51,11 @@ class Archive(list):
 					plt.show()
 				print(
 					f'An error occurred loading image {C.image_id}. Do not save the archive if you do not want to lose the corresponding data')
-				to_remove.append(i)
+				toRemove.append(i)
 
-		to_remove.reverse()
+		toRemove.reverse()
 
-		for i in to_remove:
+		for i in toRemove:
 			archive.pop(i)
 
 		return archive
@@ -67,51 +67,51 @@ class Archive(list):
 			C.image = None
 
 		# Dumping
-		with open(self.file_name, 'wb') as file:
+		with open(self.fileName, 'wb') as file:
 			return pickle.dump(self, file)
 
-	def as_dict(self):
+	def asDict(self):
 		"""
 		archive returned as a dictionary where keys are image_ids and values are lists of corresponding circles
 		@return: the dictionary
 		"""
 
-		output_dict = {}
+		outputDict = {}
 
 		C: circle
 		for C in self:
-			if not (C.image_id in output_dict):
+			if not (C.image_id in outputDict):
 				# Handling the case the image id is not already present as key
-				output_dict[C.image_id] = [C]
+				outputDict[C.image_id] = [C]
 
 			else:
 				# Handling the case the image id is already present as key
-				output_dict[C.image_id].append(C)
+				outputDict[C.image_id].append(C)
 
-		return output_dict
+		return outputDict
 
-	def visualize(self, image_id: str = None, archive_index: int = None):
+	def visualize(self, imageId: str = None, archiveIndex: int = None):
 
-		if (image_id is None) and (archive_index is None):
+		if (imageId is None) and (archiveIndex is None):
 			# Loading the entire archive as dict
-			working_dict = self.as_dict()
+			workingDict = self.asDict()
 		else:
 			# Working on a reduced archive
-			if not (archive_index is None):
-				image_id = self[archive_index].image_id
-			working_dict = {image_id: self.as_dict()[image_id]}
+			if not (archiveIndex is None):
+				imageId = self[archiveIndex].image_id
+			workingDict = {imageId: self.asDict()[imageId]}
 
 		print('Dict ready!')
 
-		visualization_dict = {}
+		visualizationDict = {}
 
-		for i, circles in enumerate(working_dict.values()):
+		for i, circles in enumerate(workingDict.values()):
 
 			# Retrieving image data
-			original_image = circles[0].image
-			image = original_image.copy()
-			image_id = circles[0].image_id
-			print(f'\nProcessing image {image_id} ({i + 1}/{len(working_dict.values())})')
+			originalImage = circles[0].image
+			image = originalImage.copy()
+			imageId = circles[0].image_id
+			print(f'\nProcessing image {imageId} ({i + 1}/{len(workingDict.values())})')
 
 			# Adding circles to image
 			C: circle
@@ -127,23 +127,23 @@ class Archive(list):
 				print(f'\tRendered {circles.index(C) + 1}/{len(circles)}.')
 
 			# Storing resulting images
-			visualization_dict[image_id] = [original_image, image]
+			visualizationDict[imageId] = [originalImage, image]
 
 		print(f'\nImage rendering finished.')
 
 		# Visualization
-		for image_id in visualization_dict.keys():
+		for imageId in visualizationDict.keys():
 			matplotlib.rcParams['figure.figsize'] = [20, 7]
 
 			# Subplot 1: original image
 			plt.subplot(121)
-			plt.title(f"{image_id}")
-			plt.imshow(visualization_dict[image_id][0])
+			plt.title(f"{imageId}")
+			plt.imshow(visualizationDict[imageId][0])
 
 			# Subplot 2: rendered image
 			plt.subplot(122)
 			plt.title("Index [Archive Index]")
-			plt.imshow(visualization_dict[image_id][1])
+			plt.imshow(visualizationDict[imageId][1])
 
 			plt.show()
 

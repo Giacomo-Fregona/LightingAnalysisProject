@@ -88,7 +88,7 @@ if __name__ == '__main__':
 
 		# Loading the archive
 		A: Archive = Archive.load(A_filename)
-		A_dict = A.as_dict()
+		A_dict = A.asDict()
 
 		fig, axes = plt.subplots(1, 3, figsize=(20, 5))
 
