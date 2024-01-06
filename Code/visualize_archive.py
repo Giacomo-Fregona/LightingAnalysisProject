@@ -31,10 +31,10 @@ for C in data:
 
 	# Initializing data_dict(image_id) if not already existing
 	if C.image_id not in data_dict:
-		data_dict[C.image_id] = {coeff: [] for coeff in C.coeff_list}
+		data_dict[C.image_id] = {coeff: [] for coeff in C.coeffList}
 
 	# Adding coefficients of the considered C
-	for coeff in circle.coeff_list:
+	for coeff in circle.coeffList:
 		data_dict[C.image_id][coeff].append(C.get_coeff(coeff))
 
 # Printing data_dict
@@ -51,7 +51,7 @@ standard_deviations = {}
 for image_id, values in data_dict.items():
 
 	# Computing standard deviation on every coefficient
-	std_dev = {coeff: np.std(values['l00'], axis=0) for coeff in circle.coeff_list}
+	std_dev = {coeff: np.std(values['l00'], axis=0) for coeff in circle.coeffList}
 
 	# Adding the result to the dict
 	standard_deviations[image_id] = std_dev
@@ -72,9 +72,9 @@ for nome_immagine, coefficient_dict in standard_deviations.items():
 
 #Calcolo coefficienti normalizzati
 RGB = {
-	'R': {coeff: [] for coeff in circle.coeff_list},
-	'G': {coeff: [] for coeff in circle.coeff_list},
-	'B': {coeff: [] for coeff in circle.coeff_list}
+	'R': {coeff: [] for coeff in circle.coeffList},
+	'G': {coeff: [] for coeff in circle.coeffList},
+	'B': {coeff: [] for coeff in circle.coeffList}
 }
 
 for nome_immagine, coefficient_dict in data_dict.items():

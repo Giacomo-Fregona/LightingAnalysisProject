@@ -3,19 +3,21 @@ from matplotlib import pyplot as plt
 from circle import circle
 from archive import Archive
 
-def get_couples(l: list):
+
+def getCouples(l: list):
 	"""
 	getting all the couples of circles to be compared
 	@param l: list of the circles belonging to the same image
 	@return: list of tuples representing couples of circles
 	"""
 	output = []
-	for i in range(len(l)-1):
-		for j in range(i+1, len(l)):
-			output.append((l[i],l[j]))
+	for i in range(len(l) - 1):
+		for j in range(i + 1, len(l)):
+			output.append((l[i], l[j]))
 	return output
 
-def ax_index(coeff: str):
+
+def axIndex(coeff: str):
 	"""
 	Getting the right ax for a given coefficient
 	@param coeff: the coefficient
@@ -23,24 +25,26 @@ def ax_index(coeff: str):
 	"""
 
 	# Checking if coeff is a valid input
-	if not (coeff in circle.coeff_list):
+	if not (coeff in circle.coeffList):
 		raise Exception(f'coeff {coeff} not in coeff list')
 
 	# returning the right axes index
-	if coeff == circle.coeff_list[0]:
+	if coeff == circle.coeffList[0]:
 		return 0
-	elif coeff in circle.coeff_list[1:4]:
+	elif coeff in circle.coeffList[1:4]:
 		return 1
-	elif coeff in circle.coeff_list[4:]:
+	elif coeff in circle.coeffList[4:]:
 		return 2
 	else:
 		raise Exception(f'Inappropriate behaviour of ax_index function')
 
 
+# diagonalLine working variables
 m = []
 M = []
 
-def diagonal_line(coeff: str, xm, xM, axes):
+
+def diagonalLine(coeff: str, xm, xM, axes):
 	"""
 	Handling the diagonal line of axes
 	@param coeff: the coefficient we are working with
@@ -51,7 +55,7 @@ def diagonal_line(coeff: str, xm, xM, axes):
 	"""
 
 	# Checking if coeff is a valid input
-	if not (coeff in circle.coeff_list):
+	if not (coeff in circle.coeffList):
 		raise Exception(f'coeff {coeff} not in coeff list')
 
 	# Adding min and max to the lists
@@ -60,14 +64,15 @@ def diagonal_line(coeff: str, xm, xM, axes):
 	M.append(xM)
 
 	# In the case coefficients are 0, 3 or 8, plot the diagonal line and reset the m, M lists
-	if coeff == circle.coeff_list[0] or coeff == circle.coeff_list[3] or coeff == circle.coeff_list[8]:
+	if coeff == circle.coeffList[0] or coeff == circle.coeffList[3] or coeff == circle.coeffList[8]:
 		m = min(m)
 		M = max(M)
-		axes[ax_index(coeff)].plot([m, M], [m, M], color='black', linestyle='--')
+		axes[axIndex(coeff)].plot([m, M], [m, M], color='black', linestyle='--')
 		m = []
 		M = []
 
-def coeff_pedix(coeff: str):
+
+def coeffPedix(coeff: str):
 	"""
 	From coeff to its pedix (for label representation)
 	@param coeff: the coeff
@@ -82,49 +87,47 @@ def coeff_pedix(coeff: str):
 
 	return '{' + coeff[1] + ',' + minus + coeff[-1] + '}'
 
+
 if __name__ == '__main__':
 
-	for A_filename in [Archive.REAL, Archive.PROMPT, Archive.VARIATION]:
+	for filename in [Archive.REAL, Archive.PROMPT, Archive.VARIATION]:
 
 		# Loading the archive
-		A: Archive = Archive.load(A_filename)
+		A: Archive = Archive.load(filename)
 		A_dict = A.asDict()
 
 		fig, axes = plt.subplots(1, 3, figsize=(20, 5))
 
 		# Retrieving all possible couples inside the same image
-		couples = [couple for circles_list in A_dict.values() for couple in get_couples(circles_list)]
+		couples = [couple for circlesList in A_dict.values() for couple in getCouples(circlesList)]
 		print(f'{len(couples)} couples')
 
 		# Getting the data
-		data_1 = {coeff: [] for coeff in circle.coeff_list}
-		data_2 = {coeff: [] for coeff in circle.coeff_list}
+		data1 = {coeff: [] for coeff in circle.coeffList}
+		data2 = {coeff: [] for coeff in circle.coeffList}
 		for (C1, C2) in couples:
-			for coeff in circle.coeff_list:
-
-				data_1[coeff].append(C1.get_coeff(coeff))
-				data_2[coeff].append(C2.get_coeff(coeff))
+			for coeff in circle.coeffList:
+				data1[coeff].append(C1.get_coeff(coeff))
+				data2[coeff].append(C2.get_coeff(coeff))
 
 		# Plotting
-		for coeff in circle.coeff_list:
-
+		for coeff in circle.coeffList:
 			# Retrieving data (only red)
-			x = [RGB[0] for RGB in data_1[coeff]]
-			y = [RGB[0] for RGB in data_2[coeff]]
+			x = [RGB[0] for RGB in data1[coeff]]
+			y = [RGB[0] for RGB in data2[coeff]]
 
 			# # Normalized version
 			# x = [RGB[0] / (data_1['l00'][i][0]) for i, RGB in enumerate(data_1[coeff])]
 			# y = [RGB[0] / (data_2['l00'][i][0]) for i, RGB in enumerate(data_2[coeff])]
 
-
 			# Plotting the scatter
-			axes[ax_index(coeff)].scatter(x, y, label=rf'$Y_{coeff_pedix(coeff)}$')
+			axes[axIndex(coeff)].scatter(x, y, label=rf'$Y_{coeffPedix(coeff)}$')
 
 			# Handling diagonal line
-			diagonal_line(coeff, min(x), max(x), axes)
+			diagonalLine(coeff, min(x), max(x), axes)
 
 		# Add labels and titles
-		fig.suptitle(f'{A_filename}')
+		fig.suptitle(f'{filename}')
 		axes[0].set_title('Zeroth order harmonics')
 		axes[1].set_title('First order harmonics')
 		axes[2].set_title('Second order harmonics')
