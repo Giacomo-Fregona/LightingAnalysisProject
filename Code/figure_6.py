@@ -67,7 +67,8 @@ def diagonalLine(coeff: str, xm, xM, axes):
 	if coeff == circle.coeffList[0] or coeff == circle.coeffList[3] or coeff == circle.coeffList[8]:
 		m = min(m)
 		M = max(M)
-		axes[axIndex(coeff)].plot([m, M], [m, M], color='black', linestyle='--')
+		axes[axIndex(coeff)].plot([-150, 150], [-150, 150], color='black', linestyle='--')
+		# axes[axIndex(coeff)].plot([m, M], [m, M], color='black', linestyle='--')
 		m = []
 		M = []
 
@@ -113,12 +114,12 @@ if __name__ == '__main__':
 		# Plotting
 		for coeff in circle.coeffList:
 			# Retrieving data (only red)
-			x = [RGB[0] for RGB in data1[coeff]]
-			y = [RGB[0] for RGB in data2[coeff]]
+			# x = [RGB[1] for RGB in data1[coeff]]
+			# y = [RGB[1] for RGB in data2[coeff]]
 
 			# # Normalized version
-			# x = [RGB[0] / (data_1['l00'][i][0]) for i, RGB in enumerate(data_1[coeff])]
-			# y = [RGB[0] / (data_2['l00'][i][0]) for i, RGB in enumerate(data_2[coeff])]
+			x = [RGB[0] / (data1['l00'][i][0]) for i, RGB in enumerate(data1[coeff])]
+			y = [RGB[0] / (data2['l00'][i][0]) for i, RGB in enumerate(data2[coeff])]
 
 			# Plotting the scatter
 			axes[axIndex(coeff)].scatter(x, y, label=rf'$Y_{coeffPedix(coeff)}$')
@@ -135,5 +136,7 @@ if __name__ == '__main__':
 			axes[i].set_xlabel('Lighting coefficients')
 			axes[i].set_ylabel('Lighting coefficients')
 			axes[i].legend()
+			axes[i].set_xlim([-0.5, 0.5])
+			axes[i].set_ylim([-0.5, 0.5])
 
 	plt.show()

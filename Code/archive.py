@@ -22,7 +22,7 @@ class Archive(list):
 	def __repr__(self):
 
 		selfDict = self.asDict()
-		output = f'\nArchive {self.fileName} containing {len(selfDict.keys())} images.'
+		output = f'\nArchive {self.fileName} containing {len(selfDict.keys())} images and {len(self)} circles.'
 		for imageId in selfDict.keys():
 			output += f'\n\t{imageId} --> {len(selfDict[imageId])} circles'
 		return output
