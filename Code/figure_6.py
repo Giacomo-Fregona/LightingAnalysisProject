@@ -2,6 +2,8 @@ from matplotlib import pyplot as plt
 
 from circle import circle
 from archive import Archive
+import sys
+sys.path.append('.')
 
 
 def getCouples(l: list):

@@ -3,6 +3,8 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 from archive import Archive
+import sys
+sys.path.append('.')
 
 dataReal = Archive.load(Archive.REAL)
 dataPrompt = Archive.load(Archive.PROMPT)

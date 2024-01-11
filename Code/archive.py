@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import cv2
 
 from circle import circle
+import sys
+sys.path.append('.')
 
 class Archive(list):
 	REAL = './Archive/real.pkl'
