@@ -100,29 +100,6 @@ if __name__ == '__main__':
 
 		# Loading the archive
 		A: Archive = Archive.load(filename)
-		if filename == Archive.REAL:
-			tennis = [9, 14, 18, 21, 25, 40, 42, 49, 53, 64, 74]
-			tennis.reverse()
-			probl = [16, 47, 70]
-			probl.reverse()
-
-			for t in probl:
-				A.pop(t)
-		elif filename == Archive.PROMPT:
-
-			probl = [5, 17, 18, 23, 24, 25, 26, 33, 34, 39, 40, 41, 42, 48, 49, 57, 58, 59, 62, 62]
-			probl.reverse()
-
-			for t in probl:
-				A.pop(t)
-		elif filename == Archive.VARIATION:
-
-			probl = [15, 16, 47, 48, 51, 59, 60, 61]
-			probl.reverse()
-
-			for t in probl:
-				A.pop(t)
-
 		A_dict = A.asDict()
 
 		fig, axes = plt.subplots(1, 3, figsize=(20, 5))
