@@ -1,3 +1,4 @@
+import numpy as np
 from matplotlib import pyplot as plt
 
 from circle import circle
@@ -93,17 +94,44 @@ def coeffPedix(coeff: str):
 
 if __name__ == '__main__':
 
+	normalized = True
+
 	for filename in [Archive.REAL, Archive.PROMPT, Archive.VARIATION]:
 
 		# Loading the archive
 		A: Archive = Archive.load(filename)
+		if filename == Archive.REAL:
+			tennis = [9, 14, 18, 21, 25, 40, 42, 49, 53, 64, 74]
+			tennis.reverse()
+			probl = [16, 47, 70]
+			probl.reverse()
+
+			for t in probl:
+				A.pop(t)
+		elif filename == Archive.PROMPT:
+
+			probl = [5, 17, 18, 23, 24, 25, 26, 33, 34, 39, 40, 41, 42, 48, 49, 57, 58, 59, 62, 62]
+			probl.reverse()
+
+			for t in probl:
+				A.pop(t)
+		elif filename == Archive.VARIATION:
+
+			probl = [15, 16, 47, 48, 51, 59, 60, 61]
+			probl.reverse()
+
+			for t in probl:
+				A.pop(t)
+
 		A_dict = A.asDict()
 
 		fig, axes = plt.subplots(1, 3, figsize=(20, 5))
 
 		# Retrieving all possible couples inside the same image
 		couples = [couple for circlesList in A_dict.values() for couple in getCouples(circlesList)]
-		print(f'{len(couples)} couples')
+
+		print(f'\n{len(couples)} couples for archive {filename}')
+		print(f'Mean difference:')
 
 		# Getting the data
 		data1 = {coeff: [] for coeff in circle.coeffList}
@@ -115,13 +143,26 @@ if __name__ == '__main__':
 
 		# Plotting
 		for coeff in circle.coeffList:
-			# Retrieving data (only red)
-			# x = [RGB[1] for RGB in data1[coeff]]
-			# y = [RGB[1] for RGB in data2[coeff]]
 
-			# # Normalized version
-			x = [RGB[0] / (data1['l00'][i][0]) for i, RGB in enumerate(data1[coeff])]
-			y = [RGB[0] / (data2['l00'][i][0]) for i, RGB in enumerate(data2[coeff])]
+			if normalized:
+				# # Normalized version
+				x = [RGB[d] / (data1['l00'][i][d]) for i, RGB in enumerate(data1[coeff]) for d in range(3)]
+				y = [RGB[d] / (data2['l00'][i][d]) for i, RGB in enumerate(data2[coeff]) for d in range(3)]
+			# else:
+				# Retrieving data (only red)
+				# x = [RGB[d] for RGB in data1[coeff] for d in range(3)]
+				# y = [RGB[d] for RGB in data2[coeff] for d in range(3)]
+
+
+			# Computing the mean difference
+			e = abs(np.array(x) - np.array(y))
+			e.sort()
+			l = len(e)//10
+			e = e[l:-l]
+			start = e[0]
+			end = e[-1]
+			# var = np.var(e)
+			print(f'\t{coeff} -> {(np.sum(e) / len(e)):.2}  \t[{start:.2}, {end:.2}]')
 
 			# Plotting the scatter
 			axes[axIndex(coeff)].scatter(x, y, label=rf'$Y_{coeffPedix(coeff)}$')
@@ -138,7 +179,9 @@ if __name__ == '__main__':
 			axes[i].set_xlabel('Lighting coefficients')
 			axes[i].set_ylabel('Lighting coefficients')
 			axes[i].legend()
-			axes[i].set_xlim([-0.5, 0.5])
-			axes[i].set_ylim([-0.5, 0.5])
+
+			lim = 2 if normalized else 150
+			axes[i].set_xlim([-lim, lim])
+			axes[i].set_ylim([-lim, lim])
 
 	plt.show()
