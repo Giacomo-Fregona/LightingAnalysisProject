@@ -20,7 +20,7 @@ while True:
 	if flag == "real" or flag == "prompt" or flag == "variation":
 		break
 	else:
-		print("Error: Answer must be real or dalle2")
+		print("Error: Answer must be real, prompt or variation")
 
 where = "./Samples/"+flag
 png_images = [f for f in os.listdir(where) if f.endswith(".png")]
