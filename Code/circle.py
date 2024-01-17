@@ -515,7 +515,7 @@ if __name__ == '__main__':
 	# We have already estimated for you the sphere's center and radius
 	C = circle(554, 270, 241, image=originalImage)
 
-	# Let's estimate the l_{i,j} coefficients using M = 150 points
+	# Let's estimate the l_{i,j} coefficients using M points
 	C.estimateCoefficients(M=1000)
 	print("The coefficients have been estimated.")
 
