@@ -45,7 +45,6 @@ class Archive(list):
 			try:
 				C.image = np.asarray(Image.open(C.image_id), dtype=np.uint8)
 			except:
-
 				# Handling case image not in the /Samples database
 				if C.image is not None:
 					plt.title(f'IMAGE NOT FOUND IN SAMPLES FOLDER: {C.image_id}')

@@ -81,7 +81,7 @@ for i in range(numberOfSpheres):
 	C = EM(originalImage, C, rounds=10, visual=0, finalVisual=0, erase=1)
 
 	# Estimating the coefficients
-	C.estimateCoefficients(originalImage, M=1000)
+	C.estimateCoefficients(originalImage, M=-1) # if M=-1, then count the 10% of the points with respect to the ones present in the image
 
 	# Getting the estimated coefficients for each RGB layer
 	coefficients = np.array([[C.l00[i], C.l1m1[i], C.l10[i], C.l11[i], C.l2m2[i], C.l2m1[i], C.l20[i], C.l21[i], C.l22[i]] for i in range(3)])
@@ -140,3 +140,4 @@ for i in range(numberOfSpheres):
 		pa: Archive = Archive.load(Archive.VARIATION)
 	pa.append(C)
 	pa.save()
+
