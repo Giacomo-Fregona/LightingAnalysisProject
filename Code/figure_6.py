@@ -94,12 +94,15 @@ def coeffPedix(coeff: str):
 
 if __name__ == '__main__':
 
-	normalized = True
+	normalized = False
 
 	for filename in [Archive.REAL, Archive.PROMPT, Archive.VARIATION]:
 
 		# Loading the archive
 		A: Archive = Archive.load(filename)
+		C: circle
+		# for i, C in enumerate(A):
+		# 	C.estimateCoefficients(M=1000)
 		A_dict = A.asDict()
 
 		fig, axes = plt.subplots(1, 3, figsize=(20, 5))
@@ -118,18 +121,25 @@ if __name__ == '__main__':
 				data1[coeff].append(C1.get_coeff(coeff))
 				data2[coeff].append(C2.get_coeff(coeff))
 
+		R2dataX = {i: [] for i in range(3)}
+		R2dataY = {i: [] for i in range(3)}
+
 		# Plotting
 		for coeff in circle.coeffList:
 
 			if normalized:
-				# # Normalized version
+				# Normalized version
 				x = [RGB[d] / (data1['l00'][i][d]) for i, RGB in enumerate(data1[coeff]) for d in range(3)]
 				y = [RGB[d] / (data2['l00'][i][d]) for i, RGB in enumerate(data2[coeff]) for d in range(3)]
-			# else:
-				# Retrieving data (only red)
-				# x = [RGB[d] for RGB in data1[coeff] for d in range(3)]
-				# y = [RGB[d] for RGB in data2[coeff] for d in range(3)]
 
+			else:
+				#Retrieving data (only red)
+				x = [RGB[d] for RGB in data1[coeff] for d in range(3)]
+				y = [RGB[d] for RGB in data2[coeff] for d in range(3)]
+
+
+			R2dataX[axIndex(coeff)] = R2dataX[axIndex(coeff)] + x
+			R2dataY[axIndex(coeff)] = R2dataY[axIndex(coeff)] + y
 
 			# Computing the mean difference
 			e = abs(np.array(x) - np.array(y))
@@ -157,8 +167,21 @@ if __name__ == '__main__':
 			axes[i].set_ylabel('Lighting coefficients')
 			axes[i].legend()
 
-			lim = 2 if normalized else 150
+			lim = 2 if normalized else 256
 			axes[i].set_xlim([-lim, lim])
 			axes[i].set_ylim([-lim, lim])
+
+
+
+
+		# Computing R**
+		for i in range(3):
+			print(f'\n\nPrinting R^2 estimator for harmonics of order {i}.')
+			x = np.array(R2dataX[i])
+			y = np.array(R2dataY[i])
+			mm = np.mean(x)*np.ones_like(x)
+			res = np.sum((x-y)**2)
+			tot = np.sum(np.sum((x-mm)**2))
+			print(f'R^2 = {100*(1-(res/tot))}')
 
 	plt.show()
