@@ -400,7 +400,7 @@ class circle:
 		return output
 
 	def randomPoint(self, M):
-		"Extracts a list of N points at random in the filling of the sphere."
+		"Extracts a list of M points at random in the filling of the sphere."
 
 		# Number of possible points
 		maxNumber = int(
