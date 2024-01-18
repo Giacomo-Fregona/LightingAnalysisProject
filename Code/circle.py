@@ -433,9 +433,17 @@ class circle:
 
 		return pointsList
 
-	def estimateCoefficients(self, image=None, M=9):
-		"""Estimate the rendering coefficients of the sphere using N points."""
-
+	def estimateCoefficients(self, image=None, M=-1):
+		"""Estimate the rendering coefficients of the sphere using M points."""
+		if M==-1: #if M=-1, then count the 10% of the points with respect to the ones present in the image
+			M = 0
+			for xCoordinate in range(self.center.x - self.r + 1, self.center.x + self.r):
+				d = int(np.floor(self.center.x - xCoordinate))  # distance from the point we are dealing with and the center (in x coordinate)
+				c = int(np.floor(np.sqrt(self.r ** 2 - (d) ** 2)))  # distance from the center and the minimum y that is related to the xCoordinate
+				for yCoordinate in range(self.center.y - c, self.center.y + c):
+					M = M + 1
+			M=int(np.floor(M*(10/100)))
+			
 		# In case image has not been defined, we can use the image self.image
 		if image is None:
 			if not (self.image is None):
@@ -515,7 +523,7 @@ if __name__ == '__main__':
 	# We have already estimated for you the sphere's center and radius
 	C = circle(554, 270, 241, image=originalImage)
 
-	# Let's estimate the l_{i,j} coefficients using M = 150 points
+	# Let's estimate the l_{i,j} coefficients using M points
 	C.estimateCoefficients(M=1000)
 	print("The coefficients have been estimated.")
 
