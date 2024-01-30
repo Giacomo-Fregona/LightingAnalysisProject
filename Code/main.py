@@ -65,6 +65,7 @@ input_thread.start()
 
 plt.imshow(originalImage)
 plt.title("How many spheres you want to guess? \n Write it in terminal, then close this window", fontsize=16)
+plt.axis('off')
 plt.show()
 
 # Wait for the user to provide the number of spheres
@@ -109,6 +110,7 @@ for i in range(numberOfSpheres):
 	plt.title('Rendered sphere')
 	plt.imshow(rendered)
 
+	plt.axis('off')
 	plt.show()
 
 	if(False): #to use for presentation
@@ -124,6 +126,7 @@ for i in range(numberOfSpheres):
 		plt.figure()
 		plt.title('Modified Original Image')
 		plt.imshow(originalImage)
+		plt.axis('off')
 		plt.show()
 
 	""" Adding the result of computation to the archive """
