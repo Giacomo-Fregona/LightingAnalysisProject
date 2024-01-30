@@ -42,6 +42,7 @@ class eraser:
 
 	def show(self):
 		"""Intruducing the slider for the radius and showing the interface."""
+		plt.axis('off')
 		self.imsh = plt.imshow(self.image, cmap='gray', vmin=0, vmax=255)
 
 		# Make a vertically oriented slider to control the radius
@@ -65,6 +66,7 @@ class eraser:
 
 		# Showing the interface
 		self.fig.suptitle('Please erase noise and then close this window.', fontsize=16)
+		plt.axis('off')
 		plt.show()
 
 	def on_press(self, event):
@@ -155,6 +157,7 @@ def interactiveGuess(image,
 
 	print("\n --- START OF INTERACTIVE GUESS --- ")
 
+	plt.axis('off')
 	plt.imshow(image)
 
 	fig = plt.gcf()
@@ -229,4 +232,4 @@ def interactiveGuess(image,
 		C.remove()
 
 	print(f"Result of interactive guess: {C}.\n --- END OF INTERACTIVE GUESS --- ")
-	return circle(int(center[1]), int(center[0]), int(r), image=image)  # inverted coordinates
+	return circle(int(center[1]), int(center[0]), int(r), image=image, sigma= 10)  # inverted coordinates
