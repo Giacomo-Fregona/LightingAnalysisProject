@@ -16,7 +16,7 @@ def compute_roc(scores, labels, id):
     lw = 2
 
     plt.plot(fpr, tpr,
-             lw=lw, label=f'{id}AUC = %0.2f' % roc_auc)
+             lw=lw, label=f'AUC = %0.2f' % roc_auc)
 	# plt.plot(fpr, tpr, color='darkorange',
 			 # lw=lw, label='AUC = %0.2f' % roc_auc)
     plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
@@ -24,7 +24,7 @@ def compute_roc(scores, labels, id):
     plt.ylim([0.0, 1.05])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title('Receiver operating characteristic example')
+    plt.title('Receiver Operating Characteristic')
     plt.legend(loc="lower right")
     # plt.show()
     idx_tpr = np.where((fpr - 0.1) == min(i for i in (fpr - 0.1) if i > 0))
@@ -40,9 +40,13 @@ if __name__ == '__main__':
 
 	for filename in [Archive.REAL, Archive.PROMPT, Archive.VARIATION]:
 
+
 		print(filename)
 		# Loading the archive
 		A: Archive = Archive.load(filename)
+		if filename == Archive.REAL:
+			for i in [72, 62, 51, 47, 41, 39, 24, 20, 17, 14, 9]:
+				A.pop(i)
 		A_dict = A.asDict()
 
 		# Retrieving all possible couples inside the same image
@@ -60,8 +64,8 @@ if __name__ == '__main__':
 		for coeff in circle.coeffList[1:]:
 
 			# Normalized version
-			x = [RGB[d] / (data1['l00'][i][d]) for i, RGB in enumerate(data1[coeff]) for d in [2]]
-			y = [RGB[d] / (data2['l00'][i][d]) for i, RGB in enumerate(data2[coeff]) for d in [2]]
+			x = [RGB[d] / (data1['l00'][i][d]) for i, RGB in enumerate(data1[coeff]) for d in [0,1,2]]
+			y = [RGB[d] / (data2['l00'][i][d]) for i, RGB in enumerate(data2[coeff]) for d in [0,1,2]]
 
 			diff[coeff] = abs(np.array(x) - np.array(y))
 		for coeff in circle.coeffList[1:]:
@@ -75,7 +79,7 @@ if __name__ == '__main__':
 
 		for j in range(len(x)):
 			score = 0
-			for i, coeff in enumerate(['l2m2', 'l21', 'l2m1', 'l20']):
+			for i, coeff in enumerate(['l11', 'l22']):
 				score += diff[coeff][j]
 
 
@@ -84,7 +88,7 @@ if __name__ == '__main__':
 			print(f'Added {score} with label {label}')
 			(scores['test_1']).append(score)
 
-	for coeff in circle.coeffList[1:]+['test_1']:
+	for coeff in ['test_1']:
 		compute_roc(scores[coeff], labels[coeff], coeff)
 
 	plt.show()
