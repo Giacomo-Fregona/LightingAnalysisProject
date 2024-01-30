@@ -15,7 +15,7 @@ from Code.interaction_lib import eraser, interactiveGuess
 
 matplotlib.use('TkAgg')
 
-
+plt.axis('off')
 def preprocessing(originalImage, erase):
 	print("\n --- START OF PREPROCESSING --- ")
 
@@ -95,12 +95,13 @@ def EM(originalImage=None, C:circle =0, rounds=0, visual=0, finalVisual=1, erase
 		print("Showing processed image with initial circle guess...")
 		matplotlib.rcParams['figure.figsize'] = [15, 15]
 		plt.title('Processed image with initial circle guess.')
+		plt.axis('off')
 		plt.imshow(C.onImage(image))
 		plt.show()
 
 	# Speedup condition parameters
-	max_range = 100
-	sigma_range = 25
+	max_range = 1000
+	sigma_range = 250
 
 	for round in range(1, rounds + 1):
 		print("\nExecuting round {}/{} with parameters:\nEpsilon = {}       Sigma = {}".format(round, rounds, C.epsilon, C.sigma))
@@ -123,14 +124,14 @@ def EM(originalImage=None, C:circle =0, rounds=0, visual=0, finalVisual=1, erase
 				if image[i, j] == 255 and (
 						dk := ex.deltak_evo(i, j,
 											C)) < max_range ** 2:  # The second condition provides speedup
-					#
+
 					M.append([i ** 2 + j ** 2, i, j, 1])
-					w.append(ex.wk(dk, C.sigma, C.epsilon))
+					wk = ex.wk(dk, C.sigma, C.epsilon)
+					w.append(wk)
 					if dk < sigma_range ** 2:  # Second speedup condition
 						# Calculations regarding the update of the parameter sigma
-						wk_s = ex.wk_sigma(dk, C.sigma, C.epsilon)
-						sigma_num += wk_s * dk
-						sigma_den += wk_s
+						sigma_num += wk * np.sqrt(dk)
+						sigma_den += wk
 
 		# Updating the actual guess
 		W = np.diag(np.array(w))
@@ -152,6 +153,7 @@ def EM(originalImage=None, C:circle =0, rounds=0, visual=0, finalVisual=1, erase
 			matplotlib.rcParams['figure.figsize'] = [7, 7]
 			plt.title('Circle estimation after {} step.'.format(round))
 			plt.imshow(C.onImage(image))
+			plt.axis('off')
 			plt.show()
 
 	# Casting coordinates to integer values
@@ -165,6 +167,7 @@ def EM(originalImage=None, C:circle =0, rounds=0, visual=0, finalVisual=1, erase
 		matplotlib.rcParams['figure.figsize'] = [7, 7]
 		plt.title('Final estimation')
 		plt.imshow(C.onImage(originalImage))
+		plt.axis('off')
 		plt.show()
 	print("Final guess returned.")
 	print("\n --- END OF E.M. ALGORITHM --- ")
@@ -176,7 +179,7 @@ if __name__ == "__main__":
 	##### EXPECTATION MAXIMIZATION DEMO #####
 
 	# Let's open a RGB image from our sample folder
-	imageName = "./Samples/real/real_1.png"
+	imageName = "./Samples/prompt/prompt_2.png"
 	originalImage = np.asarray(Image.open(imageName), dtype=np.uint8)
 	print(f'Image "{imageName}" opened.')
 
@@ -187,4 +190,4 @@ if __name__ == "__main__":
 	# Set visual=1 if you want a round by round visualization of the computation in progress
 	# Set erase=0 to skip the erasing procedure
 	# The method will automatically show the final estimation
-	EM(originalImage, C, rounds=10, visual=0, finalVisual=1, erase=1)
+	EM(originalImage, C, rounds=100, visual=1, finalVisual=1, erase=1)
