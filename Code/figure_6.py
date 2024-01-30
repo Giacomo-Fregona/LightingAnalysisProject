@@ -6,6 +6,8 @@ from archive import Archive
 import sys
 sys.path.append('.')
 
+colors = {'l00': '#000000', 'l1m1': '#0072bd', 'l10': '#d95319', 'l11': '#edb120', 'l2m2': '#7e2f8e',
+		  'l21': '#a2142f', 'l2m1': '#77ac30', 'l20': '#4dbeee', 'l22': '#808080'}
 
 def getCouples(l: list):
 	"""
@@ -70,7 +72,7 @@ def diagonalLine(coeff: str, xm, xM, axes):
 	if coeff == circle.coeffList[0] or coeff == circle.coeffList[3] or coeff == circle.coeffList[8]:
 		m = min(m)
 		M = max(M)
-		axes[axIndex(coeff)].plot([-150, 150], [-150, 150], color='black', linestyle='--')
+		axes[axIndex(coeff)].plot([-260, 260], [-260, 260], color='black', linestyle='--')
 		# axes[axIndex(coeff)].plot([m, M], [m, M], color='black', linestyle='--')
 		m = []
 		M = []
@@ -94,12 +96,16 @@ def coeffPedix(coeff: str):
 
 if __name__ == '__main__':
 
-	normalized = False
+	normalized = True
 
-	for filename in [Archive.REAL, Archive.PROMPT, Archive.VARIATION]:
+	for filename in [Archive.REAL]:
 
 		# Loading the archive
 		A: Archive = Archive.load(filename)
+
+		if filename == Archive.REAL:
+			for i in [72, 62, 51, 47, 41, 39, 24, 20, 17, 14, 9]:
+				A.pop(i)
 		C: circle
 		# for i, C in enumerate(A):
 		# 	C.estimateCoefficients(M=1000)
@@ -110,7 +116,7 @@ if __name__ == '__main__':
 		# Retrieving all possible couples inside the same image
 		couples = [couple for circlesList in A_dict.values() for couple in getCouples(circlesList)]
 
-		print(f'\n{len(couples)} couples for archive {filename}')
+		print(f'\n{len(couples)} couples for archive {filename}, images = {len(A_dict.keys())}, circles = {len(A)}')
 		print(f'Mean difference:')
 
 		# Getting the data
@@ -144,32 +150,39 @@ if __name__ == '__main__':
 			# Computing the mean difference
 			e = abs(np.array(x) - np.array(y))
 			e.sort()
-			l = len(e)//10
-			e = e[l:-l]
+			# l = len(e)//10
+			# e = e[l:-l]
 			start = e[0]
 			end = e[-1]
 			# var = np.var(e)
-			print(f'\t{coeff} -> {(np.sum(e) / len(e)):.2}  \t[{start:.2}, {end:.2}]')
+			print(f'\t{coeff} -> {(np.sum(e) / len(e))}  \t[{start:.2}, {end:.2}]')
 
 			# Plotting the scatter
-			axes[axIndex(coeff)].scatter(x, y, label=rf'$Y_{coeffPedix(coeff)}$')
+			axes[axIndex(coeff)].scatter(x, y, label=rf'$Y_{coeffPedix(coeff)}$', facecolor=colors[coeff], edgecolors='black')
 
 			# Handling diagonal line
 			diagonalLine(coeff, min(x), max(x), axes)
 
 		# Add labels and titles
-		fig.suptitle(f'{filename}')
+		# fig.suptitle(f'{filename}')
 		axes[0].set_title('Zeroth order harmonics')
 		axes[1].set_title('First order harmonics')
 		axes[2].set_title('Second order harmonics')
+
+		lims=[-30, 260]
 		for i in range(3):
 			axes[i].set_xlabel('Lighting coefficients')
 			axes[i].set_ylabel('Lighting coefficients')
 			axes[i].legend()
 
-			lim = 2 if normalized else 256
-			axes[i].set_xlim([-lim, lim])
-			axes[i].set_ylim([-lim, lim])
+		axes[0].set_xlim([-30, 260])
+		axes[0].set_ylim([-30, 260])
+
+		axes[1].set_xlim([-200, 260])
+		axes[1].set_ylim([-200, 260])
+
+		axes[2].set_xlim([-230, 230])
+		axes[2].set_ylim([-230, 230])
 
 
 
