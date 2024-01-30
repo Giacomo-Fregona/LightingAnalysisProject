@@ -186,7 +186,7 @@ print(f"l2m1X: {max([np.abs(l2m1Q50X[0]-l2m1Q50X[1]), np.abs(l2m1Q50X[0]-l2m1Q50
 print(f"l20X: {max([np.abs(l20Q50X[0]-l20Q50X[1]), np.abs(l20Q50X[0]-l20Q50X[2]), np.abs(l20Q50X[1]-l20Q50X[2])])}")
 print(f"l21X: {max([np.abs(l21Q50X[0]-l21Q50X[1]), np.abs(l21Q50X[0]-l21Q50X[2]), np.abs(l21Q50X[1]-l21Q50X[2])])}")
 print(f"l22X: {max([np.abs(l22Q50X[0]-l22Q50X[1]), np.abs(l22Q50X[0]-l22Q50X[2]), np.abs(l22Q50X[1]-l22Q50X[2])])}")
-
+print()
 print(f"l1m1Y: {max([np.abs(l1m1Q50Y[0]-l1m1Q50Y[1]), np.abs(l1m1Q50Y[0]-l1m1Q50Y[2]), np.abs(l1m1Q50Y[1]-l1m1Q50Y[2])])}")
 print(f"l10Y: {max([np.abs(l10Q50Y[0]-l10Q50Y[1]), np.abs(l10Q50Y[0]-l10Q50Y[2]), np.abs(l10Q50Y[1]-l10Q50Y[2])])}")
 print(f"l11Y: {max([np.abs(l11Q50Y[0]-l11Q50Y[1]), np.abs(l11Q50Y[0]-l11Q50Y[2]), np.abs(l11Q50Y[1]-l11Q50Y[2])])}")
